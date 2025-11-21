@@ -70,7 +70,7 @@ public class Activity : Entity
 {
     public string Title { get; private set; }
     public ActivityCategory Category { get; private set; }
-    public Difficulty Difficulty { get; private set; }
+    public ActivityDifficulty Difficulty { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public DateTime? CompletedAt { get; private set; }
 
@@ -115,20 +115,20 @@ var category = ActivityCategory.Environment;
 
 ---
 
-**`Difficulty.cs`** - Value Object
+**`ActivityDifficulty.cs`** - Value Object
 
 Difficulty scale from 1 (easiest) to 10 (hardest).
 
 **Factory method:**
 ```csharp
-Difficulty.Create(5); // Custom difficulty
+ActivityDifficulty.Create(5); // Custom difficulty
 ```
 
 **Presets:**
 ```csharp
-Difficulty.Easy;   // Value = 1
-Difficulty.Medium; // Value = 5
-Difficulty.Hard;   // Value = 8
+ActivityDifficulty.Easy;   // Value = 1
+ActivityDifficulty.Medium; // Value = 5
+ActivityDifficulty.Hard;   // Value = 8
 ```
 
 **Invariant:** Value must be between 1 and 10 (throws `ArgumentException` otherwise)
@@ -161,7 +161,7 @@ Manages all IRL activities classified into 8 categories.
 
 **Current Domain Model:**
 - Aggregate Root: `Activity`
-- Value Objects: `ActivityCategory`, `Difficulty`
+- Value Objects: `ActivityCategory`, `ActivityDifficulty`
 
 **Planned Domain Events:**
 - `ActivityCompleted` (TODO in code)
@@ -263,7 +263,7 @@ Habitus/
 │           ├── Valoron.Activities.Domain/
 │           │   ├── Activity.cs                         # Aggregate root ✅
 │           │   ├── ActivityCategory.cs                 # Value object (8 categories) ✅
-│           │   ├── Difficulty.cs                       # Value object (1-10) ✅
+│           │   ├── ActivityDifficulty.cs                       # Value object (1-10) ✅
 │           │   └── Valoron.Activities.Domain.csproj
 │           │
 │           ├── Valoron.Activities.Application/
