@@ -10,11 +10,14 @@ public class Activity : Entity
     public DateTime CreatedAt { get; private set; }
     public DateTime? CompletedAt { get; private set; }
 
-    public bool IsCompleted => CompletedAt.HasValue;
+    public ActivityMeasurement Measurement { get; private set; }
+
+    public bool IsCompleted => Measurement.IsMet();
 
     private Activity() { }
 
-    public Activity(Guid id, string title, ActivityCategory category, ActivityDifficulty difficulty) : base(id)
+    public Activity(Guid id, string title, ActivityCategory category, ActivityDifficulty difficulty, ActivityMeasurement measurement) 
+        : base(id)
     {
         if (string.IsNullOrWhiteSpace(title))
             throw new ArgumentException("Title can't be empty");
@@ -22,17 +25,22 @@ public class Activity : Entity
         Title = title;
         Category = category;
         Difficulty = difficulty;
+        Measurement = measurement;
         CreatedAt = DateTime.UtcNow;
     }
 
-    public void Complete()
+    public void LogProgress(decimal value)
     {
-        if (IsCompleted)
+        if (IsCompleted && Measurement.Unit == MeasureUnit.None)
             return;
 
-        CompletedAt = DateTime.UtcNow;
-        
-        // TODO: AddDomainEvent(new ActivityCompletedEvent(this));
+        Measurement = Measurement.UpdateProgress(value);
+
+        if (IsCompleted && CompletedAt == null)
+        {
+            CompletedAt = DateTime.UtcNow;
+            // TODO: AddDomainEvent(new ActivityCompletedEvent(this));
+        }
     }
 
     public void UpdateDifficulty(ActivityDifficulty newDifficulty)

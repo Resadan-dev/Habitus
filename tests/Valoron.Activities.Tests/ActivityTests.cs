@@ -14,15 +14,17 @@ public class ActivityTests
         var title = "Clean the kitchen";
         var category = ActivityCategory.Environment;
         var difficulty = ActivityDifficulty.Medium;
+        var measurement = ActivityMeasurement.CreateBinary();
 
         // Act
-        var activity = new Activity(id, title, category, difficulty);
+        var activity = new Activity(id, title, category, difficulty, measurement);
 
         // Assert
         Assert.Equal(id, activity.Id);
         Assert.Equal(title, activity.Title);
         Assert.Equal(category, activity.Category);
         Assert.Equal(difficulty, activity.Difficulty);
+        Assert.Equal(measurement, activity.Measurement);
     }
 
     [Fact]
@@ -33,10 +35,11 @@ public class ActivityTests
         var title = "Clean the kitchen";
         var category = ActivityCategory.Environment;
         var difficulty = ActivityDifficulty.Medium;
+        var measurement = ActivityMeasurement.CreateBinary();
         var beforeCreation = DateTime.UtcNow;
 
         // Act
-        var activity = new Activity(id, title, category, difficulty);
+        var activity = new Activity(id, title, category, difficulty, measurement);
         var afterCreation = DateTime.UtcNow;
 
         // Assert
@@ -52,9 +55,10 @@ public class ActivityTests
         var title = "Clean the kitchen";
         var category = ActivityCategory.Environment;
         var difficulty = ActivityDifficulty.Medium;
+        var measurement = ActivityMeasurement.CreateBinary();
 
         // Act
-        var activity = new Activity(id, title, category, difficulty);
+        var activity = new Activity(id, title, category, difficulty, measurement);
 
         // Assert
         Assert.False(activity.IsCompleted);
@@ -69,10 +73,11 @@ public class ActivityTests
         string title = null!;
         var category = ActivityCategory.Environment;
         var difficulty = ActivityDifficulty.Medium;
+        var measurement = ActivityMeasurement.CreateBinary();
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() =>
-            new Activity(id, title, category, difficulty));
+            new Activity(id, title, category, difficulty, measurement));
         Assert.Equal("Title can't be empty", exception.Message);
     }
 
@@ -84,10 +89,11 @@ public class ActivityTests
         var title = "";
         var category = ActivityCategory.Environment;
         var difficulty = ActivityDifficulty.Medium;
+        var measurement = ActivityMeasurement.CreateBinary();
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() =>
-            new Activity(id, title, category, difficulty));
+            new Activity(id, title, category, difficulty, measurement));
         Assert.Equal("Title can't be empty", exception.Message);
     }
 
@@ -99,10 +105,11 @@ public class ActivityTests
         var title = "   ";
         var category = ActivityCategory.Environment;
         var difficulty = ActivityDifficulty.Medium;
+        var measurement = ActivityMeasurement.CreateBinary();
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() =>
-            new Activity(id, title, category, difficulty));
+            new Activity(id, title, category, difficulty, measurement));
         Assert.Equal("Title can't be empty", exception.Message);
     }
 
@@ -114,25 +121,26 @@ public class ActivityTests
         var title = "\t\n\r";
         var category = ActivityCategory.Environment;
         var difficulty = ActivityDifficulty.Medium;
+        var measurement = ActivityMeasurement.CreateBinary();
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() =>
-            new Activity(id, title, category, difficulty));
+            new Activity(id, title, category, difficulty, measurement));
         Assert.Equal("Title can't be empty", exception.Message);
     }
 
     #endregion
 
-    #region Complete Method Tests
+    #region LogProgress Method Tests (formerly Complete)
 
     [Fact]
-    public void Complete_OnNewActivity_MarksAsCompleted()
+    public void LogProgress_OnBinaryActivity_MarksAsCompleted()
     {
         // Arrange
         var activity = CreateValidActivity();
 
         // Act
-        activity.Complete();
+        activity.LogProgress(1);
 
         // Assert
         Assert.True(activity.IsCompleted);
@@ -140,14 +148,14 @@ public class ActivityTests
     }
 
     [Fact]
-    public void Complete_OnNewActivity_SetsCompletedAtToCurrentTime()
+    public void LogProgress_OnBinaryActivity_SetsCompletedAtToCurrentTime()
     {
         // Arrange
         var activity = CreateValidActivity();
         var beforeCompletion = DateTime.UtcNow;
 
         // Act
-        activity.Complete();
+        activity.LogProgress(1);
         var afterCompletion = DateTime.UtcNow;
 
         // Assert
@@ -157,18 +165,18 @@ public class ActivityTests
     }
 
     [Fact]
-    public void Complete_CalledTwice_IsIdempotent()
+    public void LogProgress_CalledTwiceOnBinary_IsIdempotent()
     {
         // Arrange
         var activity = CreateValidActivity();
-        activity.Complete();
+        activity.LogProgress(1);
         var firstCompletedAt = activity.CompletedAt;
 
         // Add small delay to ensure time would change if CompletedAt was being reset
         Thread.Sleep(10);
 
         // Act
-        activity.Complete();
+        activity.LogProgress(1);
         var secondCompletedAt = activity.CompletedAt;
 
         // Assert
@@ -176,26 +184,26 @@ public class ActivityTests
     }
 
     [Fact]
-    public void Complete_CalledMultipleTimes_DoesNotChangeCompletedAt()
+    public void LogProgress_CalledMultipleTimes_DoesNotChangeCompletedAt()
     {
         // Arrange
         var activity = CreateValidActivity();
 
         // Act
-        activity.Complete();
+        activity.LogProgress(1);
         var originalCompletedAt = activity.CompletedAt;
 
         Thread.Sleep(10);
-        activity.Complete();
+        activity.LogProgress(1);
         Thread.Sleep(10);
-        activity.Complete();
+        activity.LogProgress(1);
 
         // Assert
         Assert.Equal(originalCompletedAt, activity.CompletedAt);
     }
 
     [Fact]
-    public void IsCompleted_BeforeComplete_ReturnsFalse()
+    public void IsCompleted_BeforeLogProgress_ReturnsFalse()
     {
         // Arrange
         var activity = CreateValidActivity();
@@ -208,16 +216,68 @@ public class ActivityTests
     }
 
     [Fact]
-    public void IsCompleted_AfterComplete_ReturnsTrue()
+    public void IsCompleted_AfterLogProgress_ReturnsTrue()
     {
         // Arrange
         var activity = CreateValidActivity();
 
         // Act
-        activity.Complete();
+        activity.LogProgress(1);
 
         // Assert
         Assert.True(activity.IsCompleted);
+    }
+
+    #endregion
+
+    #region Measurement Tests
+
+    [Fact]
+    public void LogProgress_OnQuantifiableActivity_UpdatesProgress()
+    {
+        // Arrange
+        var measurement = ActivityMeasurement.CreateQuantifiable(MeasureUnit.Count, 20);
+        var activity = CreateValidActivity(measurement: measurement);
+
+        // Act
+        activity.LogProgress(10);
+
+        // Assert
+        Assert.False(activity.IsCompleted);
+        Assert.Equal(10, activity.Measurement.CurrentValue);
+        Assert.Equal(0.5m, activity.Measurement.CompletionPercentage());
+    }
+
+    [Fact]
+    public void LogProgress_OnQuantifiableActivity_CompletesWhenTargetReached()
+    {
+        // Arrange
+        var measurement = ActivityMeasurement.CreateQuantifiable(MeasureUnit.Count, 20);
+        var activity = CreateValidActivity(measurement: measurement);
+
+        // Act
+        activity.LogProgress(20);
+
+        // Assert
+        Assert.True(activity.IsCompleted);
+        Assert.NotNull(activity.CompletedAt);
+        Assert.Equal(20, activity.Measurement.CurrentValue);
+    }
+
+    [Fact]
+    public void LogProgress_OnQuantifiableActivity_CanOverAchieve()
+    {
+        // Arrange
+        var measurement = ActivityMeasurement.CreateQuantifiable(MeasureUnit.Count, 20);
+        var activity = CreateValidActivity(measurement: measurement);
+
+        // Act
+        activity.LogProgress(25);
+
+        // Assert
+        Assert.True(activity.IsCompleted);
+        Assert.Equal(25, activity.Measurement.CurrentValue);
+        Assert.Equal(1.0m, activity.Measurement.CompletionPercentage()); // Capped at 1.0 for percentage
     }
 
     #endregion
@@ -258,7 +318,7 @@ public class ActivityTests
     {
         // Arrange
         var activity = CreateValidActivity(difficulty: ActivityDifficulty.Easy);
-        activity.Complete();
+        activity.LogProgress(1);
         var newDifficulty = ActivityDifficulty.Hard;
 
         // Act & Assert
@@ -273,7 +333,7 @@ public class ActivityTests
         // Arrange
         var originalDifficulty = ActivityDifficulty.Easy;
         var activity = CreateValidActivity(difficulty: originalDifficulty);
-        activity.Complete();
+        activity.LogProgress(1);
 
         // Act
         try
@@ -304,7 +364,7 @@ public class ActivityTests
         Assert.Null(activity.CompletedAt);
 
         // Act - Transition to completed
-        activity.Complete();
+        activity.LogProgress(1);
 
         // Assert - Completed state
         Assert.True(activity.IsCompleted);
@@ -316,7 +376,7 @@ public class ActivityTests
     {
         // Arrange
         var activity = CreateValidActivity();
-        activity.Complete();
+        activity.LogProgress(1);
 
         // Act & Assert
         Assert.Throws<InvalidOperationException>(() =>
@@ -336,7 +396,7 @@ public class ActivityTests
         // Act
         activity.UpdateDifficulty(ActivityDifficulty.Medium);
         activity.UpdateDifficulty(ActivityDifficulty.Hard);
-        activity.Complete();
+        activity.LogProgress(1);
 
         // Assert
         Assert.True(activity.IsCompleted);
@@ -351,7 +411,7 @@ public class ActivityTests
 
         // Act
         Thread.Sleep(10); // Ensure some time passes
-        activity.Complete();
+        activity.LogProgress(1);
 
         // Assert
         Assert.True(activity.CompletedAt > activity.CreatedAt);
@@ -375,7 +435,7 @@ public class ActivityTests
             Assert.NotNull(activity);
             Assert.False(activity.IsCompleted);
 
-            activity.Complete();
+            activity.LogProgress(1);
             Assert.True(activity.IsCompleted);
         }
     }
@@ -389,8 +449,9 @@ public class ActivityTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        var activity1 = new Activity(id, "Activity 1", ActivityCategory.Body, ActivityDifficulty.Easy);
-        var activity2 = new Activity(id, "Activity 2", ActivityCategory.Social, ActivityDifficulty.Hard);
+        var measurement = ActivityMeasurement.CreateBinary();
+        var activity1 = new Activity(id, "Activity 1", ActivityCategory.Body, ActivityDifficulty.Easy, measurement);
+        var activity2 = new Activity(id, "Activity 2", ActivityCategory.Social, ActivityDifficulty.Hard, measurement);
 
         // Act
         var areEqual = activity1.Equals(activity2);
@@ -420,13 +481,15 @@ public class ActivityTests
     private Activity CreateValidActivity(
         string title = "Test Activity",
         ActivityCategory? category = null,
-        ActivityDifficulty? difficulty = null)
+        ActivityDifficulty? difficulty = null,
+        ActivityMeasurement? measurement = null)
     {
         var id = Guid.NewGuid();
         category ??= ActivityCategory.Environment;
         difficulty ??= ActivityDifficulty.Medium;
+        measurement ??= ActivityMeasurement.CreateBinary();
 
-        return new Activity(id, title, category, difficulty);
+        return new Activity(id, title, category, difficulty, measurement);
     }
 
     #endregion
