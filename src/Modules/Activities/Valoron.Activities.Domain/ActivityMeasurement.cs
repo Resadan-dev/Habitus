@@ -27,7 +27,7 @@ public class ActivityMeasurement : ValueObject
         => new(unit, target, 0);
 
     // Méthode pour créer un NOUVEL objet avec la progression mise à jour (Immuabilité !)
-    public ActivityMeasurement UpdateProgress(decimal newValue)
+    public ActivityMeasurement WithProgress(decimal newValue)
     {
         // On peut imaginer bloquer si ça dépasse, ou permettre le "Over-achievement" (Bonus XP)
         return new ActivityMeasurement(Unit, TargetValue, newValue);

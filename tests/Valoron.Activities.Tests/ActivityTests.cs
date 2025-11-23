@@ -249,6 +249,23 @@ public class ActivityTests
     }
 
     [Fact]
+    public void LogProgress_Regression_RemovesCompletedAt()
+    {
+        // Arrange
+        var measurement = ActivityMeasurement.CreateQuantifiable(MeasureUnit.Count, 20);
+        var activity = CreateValidActivity(measurement: measurement);
+        activity.LogProgress(20); // Complete it first
+
+        // Act
+        activity.LogProgress(10); // Regress
+
+        // Assert
+        Assert.False(activity.IsCompleted);
+        Assert.Null(activity.CompletedAt);
+        Assert.Equal(10, activity.Measurement.CurrentValue);
+    }
+
+    [Fact]
     public void LogProgress_OnQuantifiableActivity_CompletesWhenTargetReached()
     {
         // Arrange
