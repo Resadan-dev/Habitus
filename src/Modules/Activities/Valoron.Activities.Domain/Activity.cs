@@ -57,4 +57,3 @@ public class Activity : Entity
         Difficulty = newDifficulty;
     }
 }
-}
