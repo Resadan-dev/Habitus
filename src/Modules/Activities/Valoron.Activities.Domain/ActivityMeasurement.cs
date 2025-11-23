@@ -10,37 +10,36 @@ public class ActivityMeasurement : ValueObject
 
     private ActivityMeasurement(MeasureUnit unit, decimal targetValue, decimal currentValue)
     {
-        if (targetValue <= 0) throw new ArgumentException("L'objectif doit être supérieur à 0");
-        if (currentValue < 0) throw new ArgumentException("La valeur actuelle ne peut pas être négative");
+        if (targetValue <= 0) throw new ArgumentException("Target value must be greater than 0");
+        if (currentValue < 0) throw new ArgumentException("Current value cannot be negative");
 
         Unit = unit;
         TargetValue = targetValue;
         CurrentValue = currentValue;
     }
 
-    // Factory pour une tâche binaire (Fait/Pas fait)
+    // Factory for binary tasks (Done / Not done)
     public static ActivityMeasurement CreateBinary() 
         => new(MeasureUnit.None, 1, 0);
 
-    // Factory pour une tâche quantitative (ex: 30 minutes)
+    // Factory for quantifiable tasks (e.g. 30 minutes)
     public static ActivityMeasurement CreateQuantifiable(MeasureUnit unit, decimal target) 
         => new(unit, target, 0);
 
-    // Méthode pour créer un NOUVEL objet avec la progression mise à jour (Immuabilité !)
+    // Creates a NEW object with updated progress (Immutability)
     public ActivityMeasurement WithProgress(decimal newValue)
     {
-        // On peut imaginer bloquer si ça dépasse, ou permettre le "Over-achievement" (Bonus XP)
+        // We could block if it exceeds target, or allow "Over-achievement" (Bonus XP)
         return new ActivityMeasurement(Unit, TargetValue, newValue);
     }
 
-    // Est-ce que l'activité est considérée comme finie ?
     public bool IsMet() => CurrentValue >= TargetValue;
 
-    // Pourcentage de complétion (utile pour l'UI ou l'XP partielle)
+    // Completion percentage (useful for UI or partial XP)
     public decimal CompletionPercentage() 
     {
         if (TargetValue == 0) return 0;
-        return Math.Min(CurrentValue / TargetValue, 1.0m); // Max 100% pour l'affichage standard
+        return Math.Min(CurrentValue / TargetValue, 1.0m); // Max 100% for standard display
     }
 
     protected override IEnumerable<object?> GetEqualityComponents()

@@ -2,9 +2,9 @@ namespace Valoron.Activities.Domain;
 
 public enum MeasureUnit
 {
-    None = 0,       // Pour les tâches binaires (Fait / Pas fait)
-    Minutes = 1,    // Pour le sport, méditation
-    Pages = 2,      // Pages lues
-    Count = 3,      // Verres d'eau, répétitions
-    Kilometers = 4  // Marche, course
+    None = 0,       // For binary tasks (Done / Not done)
+    Minutes = 1,    // For sports, meditation
+    Pages = 2,      // Pages read
+    Count = 3,      // Glasses of water, repetitions
+    Kilometers = 4  // Walking, running
 }
