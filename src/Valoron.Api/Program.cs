@@ -5,12 +5,15 @@ using Valoron.Activities.Infrastructure;
 
 using Wolverine;
 using Wolverine.EntityFrameworkCore;
+using Wolverine.Postgresql;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Host.UseWolverine(opts =>
 {
+    var connectionString = builder.Configuration.GetConnectionString("Database");
+    opts.PersistMessagesWithPostgresql(connectionString);
     opts.UseEntityFrameworkCoreTransactions();
     opts.Policies.AutoApplyTransactions();
     opts.Discovery.IncludeAssembly(typeof(CreateBookHandler).Assembly);
