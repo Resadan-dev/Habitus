@@ -18,13 +18,13 @@ public class ActivityRepository : IActivityRepository
             .FirstOrDefaultAsync(a => a.Id == id, cancellationToken);
     }
 
-    public async Task SaveAsync(Activity activity, CancellationToken cancellationToken = default)
+    public async Task AddAsync(Activity activity, CancellationToken cancellationToken = default)
     {
-        if (_context.Entry(activity).State == EntityState.Detached)
-        {
-            await _context.Activities.AddAsync(activity, cancellationToken);
-        }
-        
+        await _context.Activities.AddAsync(activity, cancellationToken);
+    }
+
+    public async Task SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
         await _context.SaveChangesAsync(cancellationToken);
     }
 }

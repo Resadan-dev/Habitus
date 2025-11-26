@@ -41,7 +41,7 @@ app.MapGet("/api/activities/{id}", async (Guid id, IMessageBus bus, Cancellation
 
 app.MapPost("/api/activities", async (CreateActivityCommand command, IMessageBus bus, CancellationToken ct) =>
 {
-    var id = await bus.InvokeAsync<Guid>(command, ct);
+    var (id, _) = await bus.InvokeAsync<(Guid, IEnumerable<object>)>(command, ct);
     return Results.Created($"/api/activities/{id}", id);
 });
 

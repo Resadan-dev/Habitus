@@ -12,7 +12,7 @@ public class CreateActivityHandler
         _activityRepository = activityRepository;
     }
 
-    public async Task<Guid> Handle(CreateActivityCommand command, IMessageContext context, CancellationToken cancellationToken)
+    public async Task<(Guid, IEnumerable<object>)> Handle(CreateActivityCommand command, CancellationToken cancellationToken)
     {
         var category = ActivityCategory.FromCode(command.CategoryCode);
         var difficulty = ActivityDifficulty.Create(command.Difficulty);
@@ -39,13 +39,8 @@ public class CreateActivityHandler
             measurement,
             command.ResourceId);
 
-        await _activityRepository.SaveAsync(activity, cancellationToken);
+        await _activityRepository.AddAsync(activity, cancellationToken);
 
-        foreach (var domainEvent in activity.DomainEvents)
-        {
-            await context.PublishAsync(domainEvent);
-        }
-
-        return activity.Id;
+        return (activity.Id, activity.DomainEvents);
     }
 }

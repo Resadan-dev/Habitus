@@ -26,7 +26,7 @@ public class LogReadingSessionHandler
 
         activity.LogProgress(command.PagesRead);
 
-        await _activityRepository.SaveAsync(activity, cancellationToken);
+        await _activityRepository.SaveChangesAsync(cancellationToken);
 
         return activity.DomainEvents;
     }
