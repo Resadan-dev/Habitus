@@ -493,6 +493,30 @@ public class ActivityTests
         Assert.Null(completedEvent);
     }
 
+    [Fact]
+    public void Constructor_RaisesActivityCreatedEvent()
+    {
+        // Arrange
+        var id = Guid.NewGuid();
+        var title = "New Activity";
+        var category = ActivityCategory.Environment;
+        var difficulty = ActivityDifficulty.Medium;
+        var measurement = ActivityMeasurement.CreateBinary();
+        var resourceId = Guid.NewGuid();
+
+        // Act
+        var activity = new Activity(id, title, category, difficulty, measurement, resourceId);
+
+        // Assert
+        var createdEvent = activity.DomainEvents.OfType<ActivityCreatedEvent>().SingleOrDefault();
+        Assert.NotNull(createdEvent);
+        Assert.Equal(id, createdEvent.ActivityId);
+        Assert.Equal(title, createdEvent.Title);
+        Assert.Equal(category.Code, createdEvent.Category);
+        Assert.Equal(difficulty.Value, createdEvent.Difficulty);
+        Assert.Equal(resourceId, createdEvent.ResourceId);
+    }
+
     #endregion
 
     #region Entity Identity Tests

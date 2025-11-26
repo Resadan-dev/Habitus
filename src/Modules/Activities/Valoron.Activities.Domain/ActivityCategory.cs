@@ -12,6 +12,23 @@ public class ActivityCategory : ValueObject
         Code = code;
         Name = name;
     }
+
+    public static ActivityCategory FromCode(string code)
+    {
+        return code.ToUpperInvariant() switch
+        {
+            "ENV" => Environment,
+            "BODY" => Body,
+            "NUTR" => Nutrition,
+            "HYG" => Hygiene,
+            "SOC" => Social,
+            "ADM" => Admin,
+            "LRN" => Learning,
+            "PROJ" => Project,
+            _ => throw new ArgumentException($"Invalid category code: {code}", nameof(code))
+        };
+    }
+
     public static ActivityCategory Environment => new("ENV", "Environment");
     public static ActivityCategory Body => new("BODY", "Body");
     public static ActivityCategory Nutrition => new("NUTR", "Nutrition");

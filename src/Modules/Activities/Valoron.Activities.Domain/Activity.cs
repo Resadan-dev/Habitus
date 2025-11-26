@@ -30,6 +30,8 @@ public class Activity : Entity
         Measurement = measurement;
         ResourceId = resourceId;
         CreatedAt = DateTime.UtcNow;
+
+        AddDomainEvent(new ActivityCreatedEvent(Id, Title, Category.Code, Difficulty.Value, ResourceId));
     }
 
     public void LogProgress(decimal value)

@@ -30,6 +30,12 @@ app.MapGet("/api/activities/{id}", async (Guid id, IMessageBus bus, Cancellation
     return activity is not null ? Results.Ok(activity) : Results.NotFound();
 });
 
+app.MapPost("/api/activities", async (CreateActivityCommand command, IMessageBus bus, CancellationToken ct) =>
+{
+    var id = await bus.InvokeAsync<Guid>(command, ct);
+    return Results.Created($"/api/activities/{id}", id);
+});
+
 app.MapPost("/api/activities/{activityId}/session", async (
     Guid activityId,
     LogReadingSessionRequest request,
