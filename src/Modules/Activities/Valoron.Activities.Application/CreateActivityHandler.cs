@@ -1,4 +1,5 @@
 using Valoron.Activities.Domain;
+using Wolverine;
 
 namespace Valoron.Activities.Application;
 
@@ -11,7 +12,7 @@ public class CreateActivityHandler
         _activityRepository = activityRepository;
     }
 
-    public async Task<(Guid, IEnumerable<object>)> Handle(CreateActivityCommand command, CancellationToken cancellationToken)
+    public async Task<Guid> Handle(CreateActivityCommand command, IMessageContext context, CancellationToken cancellationToken)
     {
         var category = ActivityCategory.FromCode(command.CategoryCode);
         var difficulty = ActivityDifficulty.Create(command.Difficulty);
@@ -40,6 +41,11 @@ public class CreateActivityHandler
 
         await _activityRepository.SaveAsync(activity, cancellationToken);
 
-        return (activity.Id, activity.DomainEvents);
+        foreach (var domainEvent in activity.DomainEvents)
+        {
+            await context.PublishAsync(domainEvent);
+        }
+
+        return activity.Id;
     }
 }

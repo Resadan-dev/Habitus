@@ -1,0 +1,15 @@
+  Identification des projets à restaurer...
+  Tous les projets sont à jour pour la restauration.
+  Valoron.BuildingBlocks -> C:\Users\dany-\Desktop\Habitus\src\BuildingBlocks\Valoron.BuildingBlocks\bin\Debug\net10.0\Valoron.BuildingBlocks.dll
+  Valoron.Activities.Domain -> C:\Users\dany-\Desktop\Habitus\src\Modules\Activities\Valoron.Activities.Domain\bin\Debug\net10.0\Valoron.Activities.Domain.dll
+C:\Users\dany-\Desktop\Habitus\src\Modules\Activities\Valoron.Activities.Application\CreateBookHandler.cs(21,23): error CS1061: 'IMessageContext' ne contient pas de définition pour 'PublishAllAsync' et aucune méthode d'extension accessible 'PublishAllAsync' acceptant un premier argument de type 'IMessageContext' n'a été trouvée (une directive using ou une référence d'assembly est-elle manquante ?) [C:\Users\dany-\Desktop\Habitus\src\Modules\Activities\Valoron.Activities.Application\Valoron.Activities.Application.csproj]
+C:\Users\dany-\Desktop\Habitus\src\Modules\Activities\Valoron.Activities.Application\CreateActivityHandler.cs(44,23): error CS1061: 'IMessageContext' ne contient pas de définition pour 'PublishAllAsync' et aucune méthode d'extension accessible 'PublishAllAsync' acceptant un premier argument de type 'IMessageContext' n'a été trouvée (une directive using ou une référence d'assembly est-elle manquante ?) [C:\Users\dany-\Desktop\Habitus\src\Modules\Activities\Valoron.Activities.Application\Valoron.Activities.Application.csproj]
+
+ÉCHEC de la build.
+
+C:\Users\dany-\Desktop\Habitus\src\Modules\Activities\Valoron.Activities.Application\CreateBookHandler.cs(21,23): error CS1061: 'IMessageContext' ne contient pas de définition pour 'PublishAllAsync' et aucune méthode d'extension accessible 'PublishAllAsync' acceptant un premier argument de type 'IMessageContext' n'a été trouvée (une directive using ou une référence d'assembly est-elle manquante ?) [C:\Users\dany-\Desktop\Habitus\src\Modules\Activities\Valoron.Activities.Application\Valoron.Activities.Application.csproj]
+C:\Users\dany-\Desktop\Habitus\src\Modules\Activities\Valoron.Activities.Application\CreateActivityHandler.cs(44,23): error CS1061: 'IMessageContext' ne contient pas de définition pour 'PublishAllAsync' et aucune méthode d'extension accessible 'PublishAllAsync' acceptant un premier argument de type 'IMessageContext' n'a été trouvée (une directive using ou une référence d'assembly est-elle manquante ?) [C:\Users\dany-\Desktop\Habitus\src\Modules\Activities\Valoron.Activities.Application\Valoron.Activities.Application.csproj]
+    0 Avertissement(s)
+    2 Erreur(s)
+
+Temps écoulé 00:00:01.24

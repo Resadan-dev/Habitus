@@ -1,0 +1,12 @@
+  Identification des projets à restaurer...
+  Tous les projets sont à jour pour la restauration.
+  Valoron.BuildingBlocks -> C:\Users\dany-\Desktop\Habitus\src\BuildingBlocks\Valoron.BuildingBlocks\bin\Debug\net10.0\Valoron.BuildingBlocks.dll
+  Valoron.Activities.Domain -> C:\Users\dany-\Desktop\Habitus\src\Modules\Activities\Valoron.Activities.Domain\bin\Debug\net10.0\Valoron.Activities.Domain.dll
+  Valoron.Activities.Application -> C:\Users\dany-\Desktop\Habitus\src\Modules\Activities\Valoron.Activities.Application\bin\Debug\net10.0\Valoron.Activities.Application.dll
+  Valoron.Activities.Tests -> C:\Users\dany-\Desktop\Habitus\tests\Valoron.Activities.Tests\bin\Debug\net10.0\Valoron.Activities.Tests.dll
+
+La génération a réussi.
+    0 Avertissement(s)
+    0 Erreur(s)
+
+Temps écoulé 00:00:01.59

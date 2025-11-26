@@ -41,13 +41,13 @@ app.MapGet("/api/activities/{id}", async (Guid id, IMessageBus bus, Cancellation
 
 app.MapPost("/api/activities", async (CreateActivityCommand command, IMessageBus bus, CancellationToken ct) =>
 {
-    var (id, _) = await bus.InvokeAsync<(Guid, IEnumerable<object>)>(command, ct);
+    var id = await bus.InvokeAsync<Guid>(command, ct);
     return Results.Created($"/api/activities/{id}", id);
 });
 
-app.MapPost("/api/books", async (CreateBookCommand cmd, IMessageBus bus, CancellationToken ct) =>
+app.MapPost("/api/books", async (CreateBookCommand command, IMessageBus bus, CancellationToken ct) =>
 {
-    var (id, _) = await bus.InvokeAsync<(Guid, IEnumerable<object>)>(cmd, ct);
+    var id = await bus.InvokeAsync<Guid>(command, ct);
     return Results.Created($"/api/books/{id}", id);
 });
 

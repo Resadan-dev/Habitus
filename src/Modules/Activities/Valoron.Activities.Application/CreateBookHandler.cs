@@ -1,3 +1,4 @@
+using Wolverine;
 using Valoron.Activities.Domain;
 
 namespace Valoron.Activities.Application;
@@ -11,10 +12,17 @@ public class CreateBookHandler
         _repository = repository;
     }
 
-    public async Task<(Guid, IEnumerable<object>)> Handle(CreateBookCommand command, CancellationToken ct)
+    public async Task<Guid> Handle(CreateBookCommand command, IMessageContext context, CancellationToken ct)
     {
         var book = new Book(Guid.NewGuid(), command.Title, command.Author, command.TotalPages);
+        
         await _repository.SaveAsync(book, ct);
-        return (book.Id, book.DomainEvents);
+        
+        foreach (var domainEvent in book.DomainEvents)
+        {
+            await context.PublishAsync(domainEvent);
+        }
+
+        return book.Id;
     }
 }
