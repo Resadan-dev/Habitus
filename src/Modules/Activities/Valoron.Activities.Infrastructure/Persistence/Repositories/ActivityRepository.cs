@@ -23,8 +23,5 @@ public class ActivityRepository : IActivityRepository
         await _context.Activities.AddAsync(activity, cancellationToken);
     }
 
-    public async Task SaveChangesAsync(CancellationToken cancellationToken = default)
-    {
-        await _context.SaveChangesAsync(cancellationToken);
-    }
+
 }
