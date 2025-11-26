@@ -5,6 +5,7 @@ using Valoron.Activities.Infrastructure;
 
 using Wolverine;
 using Wolverine.EntityFrameworkCore;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,8 +17,12 @@ builder.Host.UseWolverine(opts =>
 
 builder.Services.AddActivitiesInfrastructure(builder.Configuration);
 builder.Services.AddActivitiesApplication();
+builder.Services.AddOpenApi();
 
 var app = builder.Build();
+
+app.MapOpenApi();
+app.MapScalarApiReference();
 
 app.MapGet("/", () => "Hello World!");
 
