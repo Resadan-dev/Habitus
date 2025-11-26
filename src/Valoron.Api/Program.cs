@@ -2,10 +2,15 @@ using Valoron.Activities.Application;
 using Valoron.Activities.Infrastructure;
 
 using Wolverine;
+using Wolverine.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Host.UseWolverine();
+builder.Host.UseWolverine(opts =>
+{
+    opts.UseEntityFrameworkCoreTransactions();
+    opts.Policies.AutoApplyTransactions();
+});
 
 builder.Services.AddActivitiesInfrastructure(builder.Configuration);
 builder.Services.AddActivitiesApplication();

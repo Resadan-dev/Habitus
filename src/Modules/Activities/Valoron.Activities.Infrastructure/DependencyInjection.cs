@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Valoron.Activities.Domain;
 using Valoron.Activities.Infrastructure.Persistence;
 using Valoron.Activities.Infrastructure.Persistence.Repositories;
+using Wolverine.EntityFrameworkCore;
 
 namespace Valoron.Activities.Infrastructure;
 
@@ -13,7 +14,7 @@ public static class DependencyInjection
     {
         var connectionString = configuration.GetConnectionString("Database");
 
-        services.AddDbContext<ActivitiesDbContext>(options =>
+        services.AddDbContextWithWolverineIntegration<ActivitiesDbContext>(options =>
             options.UseNpgsql(connectionString));
 
         services.AddScoped<IActivityRepository, ActivityRepository>();
