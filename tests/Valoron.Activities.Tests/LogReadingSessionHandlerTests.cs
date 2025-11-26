@@ -38,7 +38,7 @@ public class LogReadingSessionHandlerTests
         // Assert
         Assert.Equal(20, activity.Measurement.CurrentValue);
 
-        _activityRepositoryMock.Verify(r => r.SaveAsync(activity, It.IsAny<CancellationToken>()), Times.Once);
+        _activityRepositoryMock.Verify(r => r.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
         
         Assert.Single(events);
         var evt = Assert.IsType<ActivityProgressLogged>(events.First());
