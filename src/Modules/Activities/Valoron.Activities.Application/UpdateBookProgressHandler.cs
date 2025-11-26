@@ -24,6 +24,6 @@ public class UpdateBookProgressHandler
         }
 
         book.AddPagesRead((int)@event.Progress);
-        await _bookRepository.SaveAsync(book, cancellationToken);
+        await _bookRepository.SaveChangesAsync(cancellationToken);
     }
 }
