@@ -1,24 +1,23 @@
 using Moq;
 using Valoron.Activities.Application;
 using Valoron.Activities.Domain;
+using Valoron.Activities.Domain.Events;
 
 namespace Valoron.Activities.Tests;
 
 public class LogReadingSessionHandlerTests
 {
     private readonly Mock<IActivityRepository> _activityRepositoryMock;
-    private readonly Mock<IBookRepository> _bookRepositoryMock;
     private readonly LogReadingSessionHandler _handler;
 
     public LogReadingSessionHandlerTests()
     {
         _activityRepositoryMock = new Mock<IActivityRepository>();
-        _bookRepositoryMock = new Mock<IBookRepository>();
-        _handler = new LogReadingSessionHandler(_activityRepositoryMock.Object, _bookRepositoryMock.Object);
+        _handler = new LogReadingSessionHandler(_activityRepositoryMock.Object);
     }
 
     [Fact]
-    public async Task Handle_ValidCommand_UpdatesBookAndActivity()
+    public async Task Handle_ValidCommand_UpdatesActivityAndReturnsEvent()
     {
         // Arrange
         var activityId = Guid.NewGuid();
@@ -27,24 +26,25 @@ public class LogReadingSessionHandlerTests
 
         var measurement = ActivityMeasurement.CreateQuantifiable(MeasureUnit.Pages, 100);
         var activity = new Activity(activityId, "Read DDD", ActivityCategory.Learning, ActivityDifficulty.Medium, measurement, bookId);
-        var book = new Book(bookId, "DDD", "Vernon", 300);
 
         _activityRepositoryMock.Setup(r => r.GetByIdAsync(activityId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(activity);
-        _bookRepositoryMock.Setup(r => r.GetByIdAsync(bookId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(book);
 
         var command = new LogReadingSessionCommand(activityId, pagesRead);
 
         // Act
-        await _handler.Handle(command, CancellationToken.None);
+        var events = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        Assert.Equal(20, book.CurrentPage);
         Assert.Equal(20, activity.Measurement.CurrentValue);
 
-        _bookRepositoryMock.Verify(r => r.SaveAsync(book, It.IsAny<CancellationToken>()), Times.Once);
         _activityRepositoryMock.Verify(r => r.SaveAsync(activity, It.IsAny<CancellationToken>()), Times.Once);
+        
+        Assert.Single(events);
+        var evt = Assert.IsType<ActivityProgressLogged>(events.First());
+        Assert.Equal(activityId, evt.ActivityId);
+        Assert.Equal(bookId, evt.ResourceId);
+        Assert.Equal(pagesRead, evt.Progress);
     }
 
     [Fact]
@@ -54,27 +54,6 @@ public class LogReadingSessionHandlerTests
         var activityId = Guid.NewGuid();
         _activityRepositoryMock.Setup(r => r.GetByIdAsync(activityId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((Activity?)null);
-
-        var command = new LogReadingSessionCommand(activityId, 10);
-
-        // Act & Assert
-        await Assert.ThrowsAsync<InvalidOperationException>(() => _handler.Handle(command, CancellationToken.None));
-    }
-
-    [Fact]
-    public async Task Handle_BookNotFound_ThrowsException()
-    {
-        // Arrange
-        var activityId = Guid.NewGuid();
-        var bookId = Guid.NewGuid();
-        
-        var measurement = ActivityMeasurement.CreateQuantifiable(MeasureUnit.Pages, 100);
-        var activity = new Activity(activityId, "Read DDD", ActivityCategory.Learning, ActivityDifficulty.Medium, measurement, bookId);
-
-        _activityRepositoryMock.Setup(r => r.GetByIdAsync(activityId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(activity);
-        _bookRepositoryMock.Setup(r => r.GetByIdAsync(bookId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Book?)null);
 
         var command = new LogReadingSessionCommand(activityId, 10);
 

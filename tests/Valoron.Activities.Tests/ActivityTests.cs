@@ -257,7 +257,7 @@ public class ActivityTests
         activity.LogProgress(20); // Complete it first
 
         // Act
-        activity.LogProgress(10); // Regress
+        activity.LogProgress(-10); // Regress
 
         // Assert
         Assert.False(activity.IsCompleted);

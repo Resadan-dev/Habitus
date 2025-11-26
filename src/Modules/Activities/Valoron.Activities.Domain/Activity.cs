@@ -1,4 +1,5 @@
 ﻿using Valoron.BuildingBlocks;
+using Valoron.Activities.Domain.Events;
 
 namespace Valoron.Activities.Domain;
 
@@ -36,7 +37,9 @@ public class Activity : Entity
         if (IsCompleted && Measurement.Unit == MeasureUnit.None)
             return;
 
-        Measurement = Measurement.WithProgress(value);
+        Measurement = Measurement.WithProgress(Measurement.CurrentValue + value);
+
+        AddDomainEvent(new ActivityProgressLogged(Id, ResourceId, value));
 
         if (IsCompleted && CompletedAt == null)
         {

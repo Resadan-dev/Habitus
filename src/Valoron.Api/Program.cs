@@ -1,7 +1,11 @@
 using Valoron.Activities.Application;
 using Valoron.Activities.Infrastructure;
 
+using Wolverine;
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseWolverine();
 
 builder.Services.AddActivitiesInfrastructure(builder.Configuration);
 builder.Services.AddActivitiesApplication();
@@ -13,13 +17,13 @@ app.MapGet("/", () => "Hello World!");
 app.MapPost("/api/activities/{activityId}/session", async (
     Guid activityId,
     LogReadingSessionRequest request,
-    LogReadingSessionHandler handler,
+    IMessageBus bus,
     CancellationToken cancellationToken) =>
 {
     try
     {
         var command = new LogReadingSessionCommand(activityId, request.PagesRead);
-        await handler.Handle(command, cancellationToken);
+        await bus.InvokeAsync(command, cancellationToken);
         return Results.Ok();
     }
     catch (InvalidOperationException ex) when (ex.Message.Contains("not found"))
