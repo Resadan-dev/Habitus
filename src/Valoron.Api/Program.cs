@@ -13,6 +13,7 @@ builder.Host.UseWolverine(opts =>
 {
     opts.UseEntityFrameworkCoreTransactions();
     opts.Policies.AutoApplyTransactions();
+    opts.Discovery.IncludeAssembly(typeof(CreateBookHandler).Assembly);
 });
 
 builder.Services.AddActivitiesInfrastructure(builder.Configuration);
