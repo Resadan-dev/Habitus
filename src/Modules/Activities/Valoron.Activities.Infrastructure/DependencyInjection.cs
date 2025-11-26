@@ -4,6 +4,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Valoron.Activities.Domain;
 using Valoron.Activities.Infrastructure.Persistence;
 using Valoron.Activities.Infrastructure.Persistence.Repositories;
+using Valoron.Activities.Application.Queries;
+using Valoron.Activities.Infrastructure.Queries;
 using Wolverine.EntityFrameworkCore;
 
 namespace Valoron.Activities.Infrastructure;
@@ -19,6 +21,7 @@ public static class DependencyInjection
 
         services.AddScoped<IActivityRepository, ActivityRepository>();
         services.AddScoped<IBookRepository, BookRepository>();
+        services.AddScoped<IActivityQueries, ActivityQueries>();
 
         return services;
     }

@@ -1,4 +1,6 @@
 using Valoron.Activities.Application;
+using Valoron.Activities.Application.Dtos;
+using Valoron.Activities.Application.Queries;
 using Valoron.Activities.Infrastructure;
 
 using Wolverine;
@@ -18,6 +20,15 @@ builder.Services.AddActivitiesApplication();
 var app = builder.Build();
 
 app.MapGet("/", () => "Hello World!");
+
+app.MapGet("/api/activities", (IMessageBus bus, CancellationToken ct) =>
+    bus.InvokeAsync<IEnumerable<ActivityDto>>(new GetActivitiesQuery(), ct));
+
+app.MapGet("/api/activities/{id}", async (Guid id, IMessageBus bus, CancellationToken ct) =>
+{
+    var activity = await bus.InvokeAsync<ActivityDto?>(new GetActivityByIdQuery(id), ct);
+    return activity is not null ? Results.Ok(activity) : Results.NotFound();
+});
 
 app.MapPost("/api/activities/{activityId}/session", async (
     Guid activityId,
