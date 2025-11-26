@@ -18,13 +18,13 @@ public class BookRepository : IBookRepository
             .FirstOrDefaultAsync(b => b.Id == id, cancellationToken);
     }
 
-    public async Task SaveAsync(Book book, CancellationToken cancellationToken = default)
+    public async Task AddAsync(Book book, CancellationToken cancellationToken = default)
     {
-        if (_context.Entry(book).State == EntityState.Detached)
-        {
-            await _context.Books.AddAsync(book, cancellationToken);
-        }
+        await _context.Books.AddAsync(book, cancellationToken);
+    }
 
+    public async Task SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
         await _context.SaveChangesAsync(cancellationToken);
     }
 }
