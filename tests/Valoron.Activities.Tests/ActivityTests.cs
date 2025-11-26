@@ -1,4 +1,5 @@
 using Valoron.Activities.Domain;
+using Valoron.Activities.Domain.Events;
 
 namespace Valoron.Activities.Tests;
 
@@ -455,6 +456,41 @@ public class ActivityTests
             activity.LogProgress(1);
             Assert.True(activity.IsCompleted);
         }
+    }
+
+    #endregion
+
+    #region Domain Event Tests
+
+    [Fact]
+    public void LogProgress_WhenCompleted_RaisesActivityCompletedEvent()
+    {
+        // Arrange
+        var activity = CreateValidActivity();
+
+        // Act
+        activity.LogProgress(1);
+
+        // Assert
+        var completedEvent = activity.DomainEvents.OfType<ActivityCompletedEvent>().SingleOrDefault();
+        Assert.NotNull(completedEvent);
+        Assert.Equal(activity.Id, completedEvent.ActivityId);
+        Assert.Equal(activity.ResourceId, completedEvent.ResourceId);
+    }
+
+    [Fact]
+    public void LogProgress_WhenNotCompleted_DoesNotRaiseActivityCompletedEvent()
+    {
+        // Arrange
+        var measurement = ActivityMeasurement.CreateQuantifiable(MeasureUnit.Count, 20);
+        var activity = CreateValidActivity(measurement: measurement);
+
+        // Act
+        activity.LogProgress(10);
+
+        // Assert
+        var completedEvent = activity.DomainEvents.OfType<ActivityCompletedEvent>().SingleOrDefault();
+        Assert.Null(completedEvent);
     }
 
     #endregion

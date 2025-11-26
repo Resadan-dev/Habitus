@@ -44,7 +44,7 @@ public class Activity : Entity
         if (IsCompleted && CompletedAt == null)
         {
             CompletedAt = DateTime.UtcNow;
-            // TODO: AddDomainEvent(new ActivityCompletedEvent(this));
+            AddDomainEvent(new ActivityCompletedEvent(Id, ResourceId));
         }
         else if (!IsCompleted && CompletedAt != null)
         {
