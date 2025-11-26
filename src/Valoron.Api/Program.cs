@@ -41,6 +41,12 @@ app.MapPost("/api/activities", async (CreateActivityCommand command, IMessageBus
     return Results.Created($"/api/activities/{id}", id);
 });
 
+app.MapPost("/api/books", async (CreateBookCommand cmd, IMessageBus bus, CancellationToken ct) =>
+{
+    var id = await bus.InvokeAsync<Guid>(cmd, ct);
+    return Results.Created($"/api/books/{id}", id);
+});
+
 app.MapPost("/api/activities/{activityId}/session", async (
     Guid activityId,
     LogReadingSessionRequest request,

@@ -31,6 +31,8 @@ public class Book : Entity
         TotalPages = totalPages;
         CurrentPage = 0;
         Status = BookStatus.ToRead;
+
+        AddDomainEvent(new Events.BookCreated(Id, Title, Author, TotalPages));
     }
 
     public void StartReading()
