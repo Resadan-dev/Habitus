@@ -24,7 +24,7 @@ var app = builder.Build();
 app.MapOpenApi();
 app.MapScalarApiReference();
 
-app.MapGet("/", () => "Hello World!");
+app.MapGet("/", () => Results.Redirect("/scalar/v1"));
 
 app.MapGet("/api/activities", (IMessageBus bus, CancellationToken ct) =>
     bus.InvokeAsync<IEnumerable<ActivityDto>>(new GetActivitiesQuery(), ct));
