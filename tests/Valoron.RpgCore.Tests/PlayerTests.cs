@@ -45,4 +45,19 @@ public class PlayerTests
         Assert.Contains(player.DomainEvents, e => e is PlayerLeveledUpEvent ple && ple.NewLevel == 2);
         Assert.Contains(player.DomainEvents, e => e is PlayerLeveledUpEvent ple && ple.NewLevel == 3);
     }
+
+    [Fact]
+    public void LevelUp_ShouldIncreaseStats()
+    {
+        var player = new Player(Guid.NewGuid());
+        var initialStats = player.Stats;
+
+        // Level 1 -> 2
+        player.AddXp(100);
+
+        Assert.Equal(2, player.Level);
+        Assert.Equal(initialStats.Strength + 1, player.Stats.Strength);
+        Assert.Equal(initialStats.Intellect + 1, player.Stats.Intellect);
+        Assert.Equal(initialStats.Stamina + 1, player.Stats.Stamina);
+    }
 }

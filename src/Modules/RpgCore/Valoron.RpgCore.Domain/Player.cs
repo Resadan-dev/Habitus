@@ -7,6 +7,7 @@ public class Player : Entity
 {
     public int Xp { get; private set; }
     public int Level { get; private set; }
+    public PlayerStats Stats { get; private set; }
 
     private Player() { }
 
@@ -14,6 +15,7 @@ public class Player : Entity
     {
         Xp = 0;
         Level = 1;
+        Stats = PlayerStats.Default();
     }
 
     public void AddXp(int amount)
@@ -38,6 +40,7 @@ public class Player : Entity
         while (ShouldLevelUp(Level, Xp))
         {
             Level++;
+            Stats = Stats.Increase(1, 1, 1); // Simple +1 to all stats per level for now
             AddDomainEvent(new PlayerLeveledUpEvent(Id, Level));
         }
     }
