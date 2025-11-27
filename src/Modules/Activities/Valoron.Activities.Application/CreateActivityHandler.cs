@@ -6,10 +6,12 @@ namespace Valoron.Activities.Application;
 public class CreateActivityHandler
 {
     private readonly IActivityRepository _activityRepository;
+    private readonly TimeProvider _timeProvider;
 
-    public CreateActivityHandler(IActivityRepository activityRepository)
+    public CreateActivityHandler(IActivityRepository activityRepository, TimeProvider timeProvider)
     {
         _activityRepository = activityRepository;
+        _timeProvider = timeProvider;
     }
 
     public async Task<(Guid, IEnumerable<object>)> Handle(CreateActivityCommand command, CancellationToken cancellationToken)
@@ -37,7 +39,7 @@ public class CreateActivityHandler
             category,
             difficulty,
             measurement,
-            DateTime.UtcNow,
+            _timeProvider.GetUtcNow().DateTime,
             command.ResourceId);
 
         await _activityRepository.AddAsync(activity, cancellationToken);

@@ -283,7 +283,7 @@ public class ActivityTests
     }
 
     [Fact]
-    public void LogProgress_OnQuantifiableActivity_CanOverAchieve()
+    public void LogProgress_OnQuantifiableActivity_CapsAtTarget()
     {
         // Arrange
         var measurement = ActivityMeasurement.CreateQuantifiable(MeasureUnit.Count, 20);
@@ -294,8 +294,8 @@ public class ActivityTests
 
         // Assert
         Assert.True(activity.IsCompleted);
-        Assert.Equal(25, activity.Measurement.CurrentValue);
-        Assert.Equal(1.0m, activity.Measurement.CompletionPercentage()); // Capped at 1.0 for percentage
+        Assert.Equal(20, activity.Measurement.CurrentValue); // Capped at target
+        Assert.Equal(1.0m, activity.Measurement.CompletionPercentage());
     }
 
     #endregion

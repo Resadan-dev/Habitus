@@ -40,8 +40,12 @@ public class LogReadingSessionHandlerTests
 
         // _activityRepositoryMock.Verify(r => r.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
         
-        Assert.Single(events);
-        var evt = Assert.IsType<ActivityProgressLogged>(events.First());
+        // Assert
+        Assert.Equal(20, activity.Measurement.CurrentValue);
+
+        // _activityRepositoryMock.Verify(r => r.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+        
+        var evt = Assert.Single(events.OfType<ActivityProgressLogged>());
         Assert.Equal(activityId, evt.ActivityId);
         Assert.Equal(bookId, evt.ResourceId);
         Assert.Equal(pagesRead, evt.Progress);
