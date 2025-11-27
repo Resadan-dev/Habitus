@@ -25,7 +25,7 @@ public class BookFinishedHandler
         }
 
         // "Bonus de 500xp quand le livre est lu"
-        player.AddXp(500);
+        player.AddXp(Rules.XpCalculator.BookFinishedBonus);
 
         return player.DomainEvents;
     }

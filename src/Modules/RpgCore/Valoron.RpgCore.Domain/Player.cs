@@ -24,6 +24,15 @@ public class Player : Entity
         CheckLevelUp();
     }
 
+    public void GainXpFromActivity(MeasureUnit unit, decimal progress)
+    {
+        int xp = Rules.XpCalculator.CalculateFromProgress(unit, progress);
+        if (xp > 0)
+        {
+            AddXp(xp);
+        }
+    }
+
     private void CheckLevelUp()
     {
         int originalLevel = Level;

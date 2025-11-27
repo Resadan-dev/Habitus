@@ -38,18 +38,8 @@ public class ActivityProgressLoggedHandler
             await _playerRepository.AddAsync(player, cancellationToken);
         }
 
-        int xpToAdd = 0;
-
-        if (@event.Unit == MeasureUnit.Pages)
-        {
-            // "Une page lue augmente l'xp de 10"
-            xpToAdd = (int)@event.Progress * 10;
-        }
-        
-        if (xpToAdd > 0)
-        {
-            player.AddXp(xpToAdd);
-        }
+        // Delegate XP calculation to the Domain
+        player.GainXpFromActivity(@event.Unit, @event.Progress);
 
         return player.DomainEvents;
     }
