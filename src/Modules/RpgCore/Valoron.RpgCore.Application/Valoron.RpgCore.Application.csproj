@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Valoron.RpgCore.Domain\Valoron.RpgCore.Domain.csproj" />
+    <ProjectReference Include="..\..\Activities\Valoron.Activities.Domain\Valoron.Activities.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="WolverineFx" Version="5.4.0" />
+  </ItemGroup>
+
+</Project>

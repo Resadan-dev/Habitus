@@ -22,7 +22,7 @@ public class UpdateBookProgressHandlerTests
         // Arrange
         var bookId = Guid.NewGuid();
         var book = new Book(bookId, "DDD", "Vernon", 300);
-        var evt = new ActivityProgressLogged(Guid.NewGuid(), bookId, 20);
+        var evt = new ActivityProgressLogged(Guid.NewGuid(), bookId, 20, "LRN", MeasureUnit.Pages);
 
         _bookRepositoryMock.Setup(r => r.GetByIdAsync(bookId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(book);
@@ -40,7 +40,7 @@ public class UpdateBookProgressHandlerTests
     {
         // Arrange
         var bookId = Guid.NewGuid();
-        var evt = new ActivityProgressLogged(Guid.NewGuid(), bookId, 20);
+        var evt = new ActivityProgressLogged(Guid.NewGuid(), bookId, 20, "LRN", MeasureUnit.Pages);
 
         _bookRepositoryMock.Setup(r => r.GetByIdAsync(bookId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((Book?)null);
@@ -53,7 +53,7 @@ public class UpdateBookProgressHandlerTests
     public async Task Handle_NoResourceId_DoesNothing()
     {
         // Arrange
-        var evt = new ActivityProgressLogged(Guid.NewGuid(), null, 20);
+        var evt = new ActivityProgressLogged(Guid.NewGuid(), null, 20, "LRN", MeasureUnit.Pages);
 
         // Act
         await _handler.Handle(evt, CancellationToken.None);

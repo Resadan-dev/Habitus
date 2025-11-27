@@ -43,7 +43,7 @@ public class Activity : Entity
 
         Measurement = Measurement.WithProgress(Measurement.CurrentValue + value);
 
-        AddDomainEvent(new ActivityProgressLogged(Id, ResourceId, value));
+        AddDomainEvent(new ActivityProgressLogged(Id, ResourceId, value, Category.Code, Measurement.Unit));
 
         if (IsCompleted && !wasCompleted)
         {
