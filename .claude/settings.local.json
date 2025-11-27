@@ -3,7 +3,8 @@
     "allow": [
       "Bash(dir /s /b)",
       "Bash(cat:*)",
-      "Bash(dotnet test:*)"
+      "Bash(dotnet test:*)",
+      "Bash(dotnet list:*)"
     ],
     "deny": [],
     "ask": []

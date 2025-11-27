@@ -39,6 +39,7 @@ public class Book : Entity
     {
         if (Status == BookStatus.Finished) throw new InvalidOperationException("Book is already finished");
         Status = BookStatus.Reading;
+        AddDomainEvent(new Events.BookStartedEvent(Id));
     }
 
     public void AddPagesRead(int pages)
@@ -63,5 +64,6 @@ public class Book : Entity
     {
         CurrentPage = TotalPages;
         Status = BookStatus.Finished;
+        AddDomainEvent(new Events.BookFinishedEvent(Id));
     }
 }

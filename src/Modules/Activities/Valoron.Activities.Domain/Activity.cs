@@ -18,7 +18,7 @@ public class Activity : Entity
 
     private Activity() { }
 
-    public Activity(Guid id, string title, ActivityCategory category, ActivityDifficulty difficulty, ActivityMeasurement measurement, Guid? resourceId = null) 
+    public Activity(Guid id, string title, ActivityCategory category, ActivityDifficulty difficulty, ActivityMeasurement measurement, DateTime createdAt, Guid? resourceId = null) 
         : base(id)
     {
         if (string.IsNullOrWhiteSpace(title))
@@ -29,28 +29,31 @@ public class Activity : Entity
         Difficulty = difficulty;
         Measurement = measurement;
         ResourceId = resourceId;
-        CreatedAt = DateTime.UtcNow;
+        CreatedAt = createdAt;
 
         AddDomainEvent(new ActivityCreatedEvent(Id, Title, Category.Code, Difficulty.Value, ResourceId));
     }
 
-    public void LogProgress(decimal value)
+    public void LogProgress(decimal value, DateTime now)
     {
         if (IsCompleted && Measurement.Unit == MeasureUnit.None)
             return;
+
+        bool wasCompleted = IsCompleted;
 
         Measurement = Measurement.WithProgress(Measurement.CurrentValue + value);
 
         AddDomainEvent(new ActivityProgressLogged(Id, ResourceId, value));
 
-        if (IsCompleted && CompletedAt == null)
+        if (IsCompleted && !wasCompleted)
         {
-            CompletedAt = DateTime.UtcNow;
+            CompletedAt = now;
             AddDomainEvent(new ActivityCompletedEvent(Id, ResourceId));
         }
-        else if (!IsCompleted && CompletedAt != null)
+        else if (!IsCompleted && wasCompleted)
         {
             CompletedAt = null; // Regression handling
+            AddDomainEvent(new ActivityUncompletedEvent(Id, ResourceId));
         }
     }
 

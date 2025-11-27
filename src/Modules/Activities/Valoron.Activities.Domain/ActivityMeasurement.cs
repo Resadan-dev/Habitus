@@ -29,8 +29,17 @@ public class ActivityMeasurement : ValueObject
     // Creates a NEW object with updated progress (Immutability)
     public ActivityMeasurement WithProgress(decimal newValue)
     {
-        // We could block if it exceeds target, or allow "Over-achievement" (Bonus XP)
-        return new ActivityMeasurement(Unit, TargetValue, newValue);
+        // Cap at TargetValue if it's not None unit (which has target 1 but might behave differently, though here we treat it as binary)
+        // Actually, for quantifiable, we want to cap.
+        // For binary, target is 1, so capping at 1 is correct.
+        
+        decimal cappedValue = newValue;
+        if (TargetValue > 0 && newValue > TargetValue)
+        {
+            cappedValue = TargetValue;
+        }
+
+        return new ActivityMeasurement(Unit, TargetValue, cappedValue);
     }
 
     public bool IsMet() => CurrentValue >= TargetValue;

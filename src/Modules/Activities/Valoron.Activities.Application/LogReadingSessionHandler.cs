@@ -24,7 +24,7 @@ public class LogReadingSessionHandler
             throw new InvalidOperationException("Activity is not linked to a book.");
         }
 
-        activity.LogProgress(command.PagesRead);
+        activity.LogProgress(command.PagesRead, DateTime.UtcNow);
 
 
 

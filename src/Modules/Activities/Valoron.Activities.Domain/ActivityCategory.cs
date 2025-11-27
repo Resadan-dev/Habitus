@@ -29,14 +29,14 @@ public class ActivityCategory : ValueObject
         };
     }
 
-    public static ActivityCategory Environment => new("ENV", "Environment");
-    public static ActivityCategory Body => new("BODY", "Body");
-    public static ActivityCategory Nutrition => new("NUTR", "Nutrition");
-    public static ActivityCategory Hygiene => new("HYG", "Hygiene");
-    public static ActivityCategory Social => new("SOC", "Social");
-    public static ActivityCategory Admin => new("ADM", "Administrative");
-    public static ActivityCategory Learning => new("LRN", "Learning");
-    public static ActivityCategory Project => new("PROJ", "Project");
+    public static readonly ActivityCategory Environment = new("ENV", "Environment");
+    public static readonly ActivityCategory Body = new("BODY", "Body");
+    public static readonly ActivityCategory Nutrition = new("NUTR", "Nutrition");
+    public static readonly ActivityCategory Hygiene = new("HYG", "Hygiene");
+    public static readonly ActivityCategory Social = new("SOC", "Social");
+    public static readonly ActivityCategory Admin = new("ADM", "Administrative");
+    public static readonly ActivityCategory Learning = new("LRN", "Learning");
+    public static readonly ActivityCategory Project = new("PROJ", "Project");
 
     protected override IEnumerable<object?> GetEqualityComponents()
     {

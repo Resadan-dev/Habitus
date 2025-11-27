@@ -37,6 +37,7 @@ public class CreateActivityHandler
             category,
             difficulty,
             measurement,
+            DateTime.UtcNow,
             command.ResourceId);
 
         await _activityRepository.AddAsync(activity, cancellationToken);
