@@ -24,6 +24,10 @@ builder.Host.UseWolverine(opts =>
     opts.UseEntityFrameworkCoreTransactions();
     opts.Policies.AutoApplyTransactions();
     opts.Discovery.IncludeAssembly(typeof(CreateBookHandler).Assembly);
+    opts.Discovery.IncludeAssembly(typeof(Valoron.RpgCore.Application.Handlers.BookFinishedHandler).Assembly);
+    opts.Discovery.IncludeAssembly(typeof(Valoron.RpgCore.Application.Handlers.NotifyLevelUpHandler).Assembly);
+    opts.Discovery.IncludeAssembly(typeof(Valoron.RpgCore.Application.Handlers.PlayerLeveledUpHandler).Assembly);
+    opts.Discovery.IncludeAssembly(typeof(Valoron.RpgCore.Application.Handlers.PlayerXpEarnedHandler).Assembly);
 });
 
 builder.Services.AddActivitiesInfrastructure(builder.Configuration);
@@ -31,7 +35,19 @@ builder.Services.AddRpgCoreInfrastructure(builder.Configuration);
 builder.Services.AddActivitiesApplication();
 builder.Services.AddOpenApi();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReactApp", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173") // Port par défaut de Vite
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 var app = builder.Build();
+
+app.UseCors("AllowReactApp");
 
 app.Use(async (context, next) =>
 {
