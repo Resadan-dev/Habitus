@@ -13,13 +13,16 @@ public class LogReadingSessionHandlerTests
 
     private readonly Mock<IActivityRepository> _activityRepositoryMock;
     private readonly FakeTimeProvider _fakeTimeProvider;
+    private readonly Mock<ICurrentUserService> _currentUserServiceMock;
     private readonly LogReadingSessionHandler _handler;
 
     public LogReadingSessionHandlerTests()
     {
         _activityRepositoryMock = new Mock<IActivityRepository>();
         _fakeTimeProvider = new FakeTimeProvider();
-        _handler = new LogReadingSessionHandler(_activityRepositoryMock.Object, _fakeTimeProvider);
+        _currentUserServiceMock = new Mock<ICurrentUserService>();
+        _currentUserServiceMock.Setup(x => x.UserId).Returns(TestUserId);
+        _handler = new LogReadingSessionHandler(_activityRepositoryMock.Object, _fakeTimeProvider, _currentUserServiceMock.Object);
     }
 
     [Fact]
@@ -41,11 +44,6 @@ public class LogReadingSessionHandlerTests
         // Act
         var events = await _handler.Handle(command, CancellationToken.None);
 
-        // Assert
-        Assert.Equal(20, activity.Measurement.CurrentValue);
-
-        // _activityRepositoryMock.Verify(r => r.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
-        
         // Assert
         Assert.Equal(20, activity.Measurement.CurrentValue);
 
@@ -87,5 +85,24 @@ public class LogReadingSessionHandlerTests
 
         // Act & Assert
         await Assert.ThrowsAsync<InvalidOperationException>(() => _handler.Handle(command, CancellationToken.None));
+    }
+
+    [Fact]
+    public async Task Handle_ActivityBelongsToOtherUser_ThrowsUnauthorizedAccessException()
+    {
+        // Arrange
+        var activityId = Guid.NewGuid();
+        var otherUserId = Guid.NewGuid();
+        
+        var measurement = ActivityMeasurement.CreateQuantifiable(MeasureUnit.Pages, 100);
+        var activity = new Activity(activityId, otherUserId, "Read DDD", ActivityCategory.Learning, ActivityDifficulty.Medium, measurement, DateTime.UtcNow, Guid.NewGuid());
+
+        _activityRepositoryMock.Setup(r => r.GetByIdAsync(activityId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(activity);
+
+        var command = new LogReadingSessionCommand(activityId, 10);
+
+        // Act & Assert
+        await Assert.ThrowsAsync<UnauthorizedAccessException>(() => _handler.Handle(command, CancellationToken.None));
     }
 }
