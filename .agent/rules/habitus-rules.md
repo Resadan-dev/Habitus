@@ -5,7 +5,7 @@ trigger: always_on
 # ANTIGRAVITY.md - Project Context & Rules
 
 > **⚠️ SYSTEM INSTRUCTION: NO BUILD ACTIONS**
-> You are strictly FORBIDDEN from running build commands (`dotnet build`, `dotnet run`, etc.).
+> You are strictly FORBIDDEN from running build commands (`dotnet build`, `dotnet run`, etc.) nor dotnet test
 > Compilation and execution are the user's sole responsibility.
 > Focus on generating code, refactoring, and analyzing.
 

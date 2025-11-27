@@ -38,8 +38,8 @@ public class PlayerTests
     {
         var player = new Player(Guid.NewGuid());
         
-        // Level 1 -> 3 needs 250 XP total
-        player.AddXp(250);
+        // Level 1 -> 3 needs 282 XP total (approx)
+        player.AddXp(300);
         
         Assert.Equal(3, player.Level);
         Assert.Contains(player.DomainEvents, e => e is PlayerLeveledUpEvent ple && ple.NewLevel == 2);

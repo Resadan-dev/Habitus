@@ -14,4 +14,10 @@ public static class XpCalculator
     }
 
     public const int BookFinishedBonus = 500;
+
+    public static int CalculateRequiredXp(int currentLevel)
+    {
+        // Formula: 100 * (currentLevel ^ 1.5)
+        return (int)(100 * Math.Pow(currentLevel, 1.5));
+    }
 }
