@@ -10,6 +10,8 @@ using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddSingleton(TimeProvider.System);
+
 builder.Host.UseWolverine(opts =>
 {
     var connectionString = builder.Configuration.GetConnectionString("Database");

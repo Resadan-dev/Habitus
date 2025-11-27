@@ -5,10 +5,12 @@ namespace Valoron.Activities.Application;
 public class LogReadingSessionHandler
 {
     private readonly IActivityRepository _activityRepository;
+    private readonly TimeProvider _timeProvider;
 
-    public LogReadingSessionHandler(IActivityRepository activityRepository)
+    public LogReadingSessionHandler(IActivityRepository activityRepository, TimeProvider timeProvider)
     {
         _activityRepository = activityRepository;
+        _timeProvider = timeProvider;
     }
 
     public async Task<IEnumerable<object>> Handle(LogReadingSessionCommand command, CancellationToken cancellationToken)
@@ -24,7 +26,7 @@ public class LogReadingSessionHandler
             throw new InvalidOperationException("Activity is not linked to a book.");
         }
 
-        activity.LogProgress(command.PagesRead, DateTime.UtcNow);
+        activity.LogProgress(command.PagesRead, _timeProvider.GetUtcNow().DateTime);
 
 
 

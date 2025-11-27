@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Time.Testing;
 using Moq;
 using Valoron.Activities.Application;
 using Valoron.Activities.Domain;
@@ -8,12 +9,14 @@ namespace Valoron.Activities.Tests;
 public class LogReadingSessionHandlerTests
 {
     private readonly Mock<IActivityRepository> _activityRepositoryMock;
+    private readonly FakeTimeProvider _fakeTimeProvider;
     private readonly LogReadingSessionHandler _handler;
 
     public LogReadingSessionHandlerTests()
     {
         _activityRepositoryMock = new Mock<IActivityRepository>();
-        _handler = new LogReadingSessionHandler(_activityRepositoryMock.Object);
+        _fakeTimeProvider = new FakeTimeProvider();
+        _handler = new LogReadingSessionHandler(_activityRepositoryMock.Object, _fakeTimeProvider);
     }
 
     [Fact]
