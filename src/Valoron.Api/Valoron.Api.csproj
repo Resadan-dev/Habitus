@@ -3,6 +3,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Modules\Activities\Valoron.Activities.Application\Valoron.Activities.Application.csproj" />
     <ProjectReference Include="..\Modules\Activities\Valoron.Activities.Infrastructure\Valoron.Activities.Infrastructure.csproj" />
+    <ProjectReference Include="..\Modules\RpgCore\Valoron.RpgCore.Infrastructure\Valoron.RpgCore.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>

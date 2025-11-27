@@ -1,4 +1,4 @@
-using Valoron.Activities.Domain;
+using Valoron.BuildingBlocks;
 
 namespace Valoron.RpgCore.Domain.Rules;
 

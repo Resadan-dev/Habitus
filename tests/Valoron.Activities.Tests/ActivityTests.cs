@@ -1,10 +1,13 @@
 using Valoron.Activities.Domain;
 using Valoron.Activities.Domain.Events;
+using Valoron.BuildingBlocks;
 
 namespace Valoron.Activities.Tests;
 
 public class ActivityTests
 {
+    private static readonly Guid TestUserId = Guid.NewGuid();
+
     #region Constructor Tests
 
     [Fact]
@@ -18,7 +21,7 @@ public class ActivityTests
         var measurement = ActivityMeasurement.CreateBinary();
 
         // Act
-        var activity = new Activity(id, title, category, difficulty, measurement, DateTime.UtcNow);
+        var activity = new Activity(id, TestUserId, title, category, difficulty, measurement, DateTime.UtcNow);
 
         // Assert
         Assert.Equal(id, activity.Id);
@@ -40,7 +43,7 @@ public class ActivityTests
         var beforeCreation = DateTime.UtcNow;
 
         // Act
-        var activity = new Activity(id, title, category, difficulty, measurement, DateTime.UtcNow);
+        var activity = new Activity(id, TestUserId, title, category, difficulty, measurement, DateTime.UtcNow);
         var afterCreation = DateTime.UtcNow;
 
         // Assert
@@ -59,7 +62,7 @@ public class ActivityTests
         var measurement = ActivityMeasurement.CreateBinary();
 
         // Act
-        var activity = new Activity(id, title, category, difficulty, measurement, DateTime.UtcNow);
+        var activity = new Activity(id, TestUserId, title, category, difficulty, measurement, DateTime.UtcNow);
 
         // Assert
         Assert.False(activity.IsCompleted);
@@ -78,7 +81,7 @@ public class ActivityTests
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() =>
-            new Activity(id, title, category, difficulty, measurement, DateTime.UtcNow));
+            new Activity(id, TestUserId, title, category, difficulty, measurement, DateTime.UtcNow));
         Assert.Equal("Title can't be empty", exception.Message);
     }
 
@@ -94,7 +97,7 @@ public class ActivityTests
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() =>
-            new Activity(id, title, category, difficulty, measurement, DateTime.UtcNow));
+            new Activity(id, TestUserId, title, category, difficulty, measurement, DateTime.UtcNow));
         Assert.Equal("Title can't be empty", exception.Message);
     }
 
@@ -110,7 +113,7 @@ public class ActivityTests
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() =>
-            new Activity(id, title, category, difficulty, measurement, DateTime.UtcNow));
+            new Activity(id, TestUserId, title, category, difficulty, measurement, DateTime.UtcNow));
         Assert.Equal("Title can't be empty", exception.Message);
     }
 
@@ -126,7 +129,7 @@ public class ActivityTests
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() =>
-            new Activity(id, title, category, difficulty, measurement, DateTime.UtcNow));
+            new Activity(id, TestUserId, title, category, difficulty, measurement, DateTime.UtcNow));
         Assert.Equal("Title can't be empty", exception.Message);
     }
 
@@ -505,7 +508,7 @@ public class ActivityTests
         var resourceId = Guid.NewGuid();
 
         // Act
-        var activity = new Activity(id, title, category, difficulty, measurement, DateTime.UtcNow, resourceId);
+        var activity = new Activity(id, TestUserId, title, category, difficulty, measurement, DateTime.UtcNow, resourceId);
 
         // Assert
         var createdEvent = activity.DomainEvents.OfType<ActivityCreatedEvent>().SingleOrDefault();
@@ -527,8 +530,8 @@ public class ActivityTests
         // Arrange
         var id = Guid.NewGuid();
         var measurement = ActivityMeasurement.CreateBinary();
-        var activity1 = new Activity(id, "Activity 1", ActivityCategory.Body, ActivityDifficulty.Easy, measurement, DateTime.UtcNow);
-        var activity2 = new Activity(id, "Activity 2", ActivityCategory.Social, ActivityDifficulty.Hard, measurement, DateTime.UtcNow);
+        var activity1 = new Activity(id, TestUserId, "Activity 1", ActivityCategory.Body, ActivityDifficulty.Easy, measurement, DateTime.UtcNow);
+        var activity2 = new Activity(id, TestUserId, "Activity 2", ActivityCategory.Social, ActivityDifficulty.Hard, measurement, DateTime.UtcNow);
 
         // Act
         var areEqual = activity1.Equals(activity2);
@@ -566,7 +569,7 @@ public class ActivityTests
         difficulty ??= ActivityDifficulty.Medium;
         measurement ??= ActivityMeasurement.CreateBinary();
 
-        return new Activity(id, title, category, difficulty, measurement, DateTime.UtcNow);
+        return new Activity(id, TestUserId, title, category, difficulty, measurement, DateTime.UtcNow);
     }
 
     #endregion

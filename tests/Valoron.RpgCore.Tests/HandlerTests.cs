@@ -3,11 +3,14 @@ using Valoron.Activities.Domain;
 using Valoron.Activities.Domain.Events;
 using Valoron.RpgCore.Application.Handlers;
 using Valoron.RpgCore.Domain;
+using Valoron.BuildingBlocks;
 
 namespace Valoron.RpgCore.Tests;
 
 public class HandlerTests
 {
+    private static readonly Guid TestUserId = Guid.NewGuid();
+
     private readonly Mock<IPlayerRepository> _playerRepositoryMock;
     private readonly ActivityProgressLoggedHandler _progressHandler;
     private readonly BookFinishedHandler _bookFinishedHandler;
@@ -27,7 +30,7 @@ public class HandlerTests
         _playerRepositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(player);
 
-        var evt = new ActivityProgressLogged(Guid.NewGuid(), Guid.NewGuid(), 10, "LRN", MeasureUnit.Pages);
+        var evt = new ActivityProgressLogged(Guid.NewGuid(), TestUserId, Guid.NewGuid(), 10, "LRN", MeasureUnit.Pages);
 
         // Act
         await _progressHandler.Handle(evt, CancellationToken.None);
@@ -46,7 +49,7 @@ public class HandlerTests
         _playerRepositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(player);
 
-        var evt = new BookFinishedEvent(Guid.NewGuid());
+        var evt = new BookFinishedEvent(Guid.NewGuid(), TestUserId);
 
         // Act
         await _bookFinishedHandler.Handle(evt, CancellationToken.None);

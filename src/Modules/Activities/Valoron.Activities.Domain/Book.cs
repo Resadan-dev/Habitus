@@ -17,10 +17,11 @@ public class Book : Entity
     public int TotalPages { get; private set; }
     public int CurrentPage { get; private set; }
     public BookStatus Status { get; private set; }
+    public Guid UserId { get; private set; }
 
     private Book() { }
 
-    public Book(Guid id, string title, string author, int totalPages) : base(id)
+    public Book(Guid id, Guid userId, string title, string author, int totalPages) : base(id)
     {
         if (string.IsNullOrWhiteSpace(title)) throw new ArgumentException("Title cannot be empty");
         if (string.IsNullOrWhiteSpace(author)) throw new ArgumentException("Author cannot be empty");
@@ -31,15 +32,16 @@ public class Book : Entity
         TotalPages = totalPages;
         CurrentPage = 0;
         Status = BookStatus.ToRead;
+        UserId = userId;
 
-        AddDomainEvent(new Events.BookCreated(Id, Title, Author, TotalPages));
+        AddDomainEvent(new Events.BookCreated(Id, UserId, Title, Author, TotalPages));
     }
 
     public void StartReading()
     {
         if (Status == BookStatus.Finished) throw new InvalidOperationException("Book is already finished");
         Status = BookStatus.Reading;
-        AddDomainEvent(new Events.BookStartedEvent(Id));
+        AddDomainEvent(new Events.BookStartedEvent(Id, UserId));
     }
 
     public void AddPagesRead(int pages)
@@ -64,6 +66,6 @@ public class Book : Entity
     {
         CurrentPage = TotalPages;
         Status = BookStatus.Finished;
-        AddDomainEvent(new Events.BookFinishedEvent(Id));
+        AddDomainEvent(new Events.BookFinishedEvent(Id, UserId));
     }
 }

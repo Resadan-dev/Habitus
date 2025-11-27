@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Valoron.Activities.Infrastructure.Persistence;
@@ -11,9 +12,11 @@ using Valoron.Activities.Infrastructure.Persistence;
 namespace Valoron.Activities.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ActivitiesDbContext))]
-    partial class ActivitiesDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251127132824_AddUserPlumbing")]
+    partial class AddUserPlumbing
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

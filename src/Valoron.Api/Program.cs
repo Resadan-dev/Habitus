@@ -2,6 +2,9 @@ using Valoron.Activities.Application;
 using Valoron.Activities.Application.Dtos;
 using Valoron.Activities.Application.Queries;
 using Valoron.Activities.Infrastructure;
+using Valoron.RpgCore.Infrastructure;
+using Valoron.Api.Services;
+using Valoron.BuildingBlocks;
 
 using Wolverine;
 using Wolverine.EntityFrameworkCore;
@@ -11,6 +14,8 @@ using Scalar.AspNetCore;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSingleton(TimeProvider.System);
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
 builder.Host.UseWolverine(opts =>
 {
@@ -22,10 +27,20 @@ builder.Host.UseWolverine(opts =>
 });
 
 builder.Services.AddActivitiesInfrastructure(builder.Configuration);
+builder.Services.AddRpgCoreInfrastructure(builder.Configuration);
 builder.Services.AddActivitiesApplication();
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
+
+app.Use(async (context, next) =>
+{
+    if (!context.Request.Headers.ContainsKey("x-user-id"))
+    {
+        context.Request.Headers.Append("x-user-id", "00000000-0000-0000-0000-000000000001");
+    }
+    await next();
+});
 
 app.MapOpenApi();
 app.MapScalarApiReference();

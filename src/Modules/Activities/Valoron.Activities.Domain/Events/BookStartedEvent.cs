@@ -2,4 +2,4 @@ using Valoron.BuildingBlocks;
 
 namespace Valoron.Activities.Domain.Events;
 
-public record BookStartedEvent(Guid BookId);
+public record BookStartedEvent(Guid BookId, Guid UserId);

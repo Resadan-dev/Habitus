@@ -2,11 +2,14 @@ using Moq;
 using Valoron.Activities.Application;
 using Valoron.Activities.Domain;
 using Valoron.Activities.Domain.Events;
+using Valoron.BuildingBlocks;
 
 namespace Valoron.Activities.Tests;
 
 public class UpdateBookProgressHandlerTests
 {
+    private static readonly Guid TestUserId = Guid.NewGuid();
+
     private readonly Mock<IBookRepository> _bookRepositoryMock;
     private readonly UpdateBookProgressHandler _handler;
 
@@ -21,8 +24,8 @@ public class UpdateBookProgressHandlerTests
     {
         // Arrange
         var bookId = Guid.NewGuid();
-        var book = new Book(bookId, "DDD", "Vernon", 300);
-        var evt = new ActivityProgressLogged(Guid.NewGuid(), bookId, 20, "LRN", MeasureUnit.Pages);
+        var book = new Book(bookId, TestUserId, "DDD", "Vernon", 300);
+        var evt = new ActivityProgressLogged(Guid.NewGuid(), TestUserId, bookId, 20, "LRN", MeasureUnit.Pages);
 
         _bookRepositoryMock.Setup(r => r.GetByIdAsync(bookId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(book);
@@ -40,7 +43,7 @@ public class UpdateBookProgressHandlerTests
     {
         // Arrange
         var bookId = Guid.NewGuid();
-        var evt = new ActivityProgressLogged(Guid.NewGuid(), bookId, 20, "LRN", MeasureUnit.Pages);
+        var evt = new ActivityProgressLogged(Guid.NewGuid(), TestUserId, bookId, 20, "LRN", MeasureUnit.Pages);
 
         _bookRepositoryMock.Setup(r => r.GetByIdAsync(bookId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((Book?)null);
@@ -53,7 +56,7 @@ public class UpdateBookProgressHandlerTests
     public async Task Handle_NoResourceId_DoesNothing()
     {
         // Arrange
-        var evt = new ActivityProgressLogged(Guid.NewGuid(), null, 20, "LRN", MeasureUnit.Pages);
+        var evt = new ActivityProgressLogged(Guid.NewGuid(), TestUserId, null, 20, "LRN", MeasureUnit.Pages);
 
         // Act
         await _handler.Handle(evt, CancellationToken.None);

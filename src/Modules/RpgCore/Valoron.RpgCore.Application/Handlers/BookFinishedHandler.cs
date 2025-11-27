@@ -1,5 +1,6 @@
 using Valoron.Activities.Domain.Events;
 using Valoron.RpgCore.Domain;
+using Valoron.RpgCore.Domain.Rules;
 using Wolverine;
 
 namespace Valoron.RpgCore.Application.Handlers;
@@ -15,7 +16,7 @@ public class BookFinishedHandler
 
     public async Task<IEnumerable<object>> Handle(BookFinishedEvent @event, CancellationToken cancellationToken)
     {
-        var playerId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+        var playerId = @event.UserId;
         var player = await _playerRepository.GetByIdAsync(playerId, cancellationToken);
 
         if (player == null)
@@ -25,7 +26,7 @@ public class BookFinishedHandler
         }
 
         // "Bonus de 500xp quand le livre est lu"
-        player.AddXp(Rules.XpCalculator.BookFinishedBonus);
+        player.AddXp(XpCalculator.BookFinishedBonus);
 
         return player.DomainEvents;
     }

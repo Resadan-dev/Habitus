@@ -11,6 +11,7 @@ public class Activity : Entity
     public DateTime CreatedAt { get; private set; }
     public DateTime? CompletedAt { get; private set; }
     public Guid? ResourceId { get; private set; }
+    public Guid UserId { get; private set; }
 
     public ActivityMeasurement Measurement { get; private set; }
 
@@ -18,7 +19,7 @@ public class Activity : Entity
 
     private Activity() { }
 
-    public Activity(Guid id, string title, ActivityCategory category, ActivityDifficulty difficulty, ActivityMeasurement measurement, DateTime createdAt, Guid? resourceId = null) 
+    public Activity(Guid id, Guid userId, string title, ActivityCategory category, ActivityDifficulty difficulty, ActivityMeasurement measurement, DateTime createdAt, Guid? resourceId = null) 
         : base(id)
     {
         if (string.IsNullOrWhiteSpace(title))
@@ -30,8 +31,9 @@ public class Activity : Entity
         Measurement = measurement;
         ResourceId = resourceId;
         CreatedAt = createdAt;
+        UserId = userId;
 
-        AddDomainEvent(new ActivityCreatedEvent(Id, Title, Category.Code, Difficulty.Value, ResourceId));
+        AddDomainEvent(new ActivityCreatedEvent(Id, UserId, Title, Category.Code, Difficulty.Value, ResourceId));
     }
 
     public void LogProgress(decimal value, DateTime now)
@@ -43,7 +45,7 @@ public class Activity : Entity
 
         Measurement = Measurement.WithProgress(Measurement.CurrentValue + value);
 
-        AddDomainEvent(new ActivityProgressLogged(Id, ResourceId, value, Category.Code, Measurement.Unit));
+        AddDomainEvent(new ActivityProgressLogged(Id, UserId, ResourceId, value, Category.Code, Measurement.Unit));
 
         if (IsCompleted && !wasCompleted)
         {

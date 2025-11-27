@@ -33,5 +33,6 @@ public class ActivityConfiguration : IEntityTypeConfiguration<Activity>
         });
 
         builder.Property(a => a.ResourceId).IsRequired(false);
+        builder.Property(a => a.UserId).IsRequired();
     }
 }

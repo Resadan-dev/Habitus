@@ -10,7 +10,7 @@ public class Player : Entity
 
     private Player() { }
 
-    public Player(Guid id) : base(id)
+    public Player(Guid userId) : base(userId)
     {
         Xp = 0;
         Level = 1;

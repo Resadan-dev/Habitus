@@ -1,4 +1,5 @@
 using Valoron.Activities.Domain;
+using Valoron.BuildingBlocks;
 using Wolverine;
 
 namespace Valoron.Activities.Application;
@@ -7,11 +8,13 @@ public class CreateActivityHandler
 {
     private readonly IActivityRepository _activityRepository;
     private readonly TimeProvider _timeProvider;
+    private readonly ICurrentUserService _currentUserService;
 
-    public CreateActivityHandler(IActivityRepository activityRepository, TimeProvider timeProvider)
+    public CreateActivityHandler(IActivityRepository activityRepository, TimeProvider timeProvider, ICurrentUserService currentUserService)
     {
         _activityRepository = activityRepository;
         _timeProvider = timeProvider;
+        _currentUserService = currentUserService;
     }
 
     public async Task<(Guid, IEnumerable<object>)> Handle(CreateActivityCommand command, CancellationToken cancellationToken)
@@ -35,6 +38,7 @@ public class CreateActivityHandler
 
         var activity = new Activity(
             Guid.NewGuid(),
+            _currentUserService.UserId,
             command.Title,
             category,
             difficulty,

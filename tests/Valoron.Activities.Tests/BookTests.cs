@@ -4,11 +4,13 @@ namespace Valoron.Activities.Tests;
 
 public class BookTests
 {
+    private static readonly Guid TestUserId = Guid.NewGuid();
+
     [Fact]
     public void Constructor_WithValidParameters_CreatesBook()
     {
         var id = Guid.NewGuid();
-        var book = new Book(id, "DDD Distilled", "Vaughn Vernon", 250);
+        var book = new Book(id, TestUserId, "DDD Distilled", "Vaughn Vernon", 250);
 
         Assert.Equal(id, book.Id);
         Assert.Equal("DDD Distilled", book.Title);
@@ -21,7 +23,7 @@ public class BookTests
     [Fact]
     public void StartReading_UpdatesStatus()
     {
-        var book = new Book(Guid.NewGuid(), "Title", "Author", 100);
+        var book = new Book(Guid.NewGuid(), TestUserId, "Title", "Author", 100);
         book.StartReading();
         Assert.Equal(BookStatus.Reading, book.Status);
     }
@@ -29,7 +31,7 @@ public class BookTests
     [Fact]
     public void AddPagesRead_UpdatesCurrentPage()
     {
-        var book = new Book(Guid.NewGuid(), "Title", "Author", 100);
+        var book = new Book(Guid.NewGuid(), TestUserId, "Title", "Author", 100);
         book.StartReading();
         book.AddPagesRead(20);
         Assert.Equal(20, book.CurrentPage);
@@ -38,7 +40,7 @@ public class BookTests
     [Fact]
     public void AddPagesRead_AutoStartsReading()
     {
-        var book = new Book(Guid.NewGuid(), "Title", "Author", 100);
+        var book = new Book(Guid.NewGuid(), TestUserId, "Title", "Author", 100);
         book.AddPagesRead(20);
         Assert.Equal(BookStatus.Reading, book.Status);
         Assert.Equal(20, book.CurrentPage);
@@ -47,7 +49,7 @@ public class BookTests
     [Fact]
     public void AddPagesRead_CompletesBook()
     {
-        var book = new Book(Guid.NewGuid(), "Title", "Author", 100);
+        var book = new Book(Guid.NewGuid(), TestUserId, "Title", "Author", 100);
         book.AddPagesRead(100);
         Assert.Equal(BookStatus.Finished, book.Status);
         Assert.Equal(100, book.CurrentPage);
@@ -56,7 +58,7 @@ public class BookTests
     [Fact]
     public void AddPagesRead_CapsAtTotalPages()
     {
-        var book = new Book(Guid.NewGuid(), "Title", "Author", 100);
+        var book = new Book(Guid.NewGuid(), TestUserId, "Title", "Author", 100);
         book.AddPagesRead(150);
         Assert.Equal(BookStatus.Finished, book.Status);
         Assert.Equal(100, book.CurrentPage);

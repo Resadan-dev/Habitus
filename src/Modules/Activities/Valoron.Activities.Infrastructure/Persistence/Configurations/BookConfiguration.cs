@@ -20,5 +20,7 @@ public class BookConfiguration : IEntityTypeConfiguration<Book>
 
         builder.Property(b => b.Status)
             .HasConversion<string>();
+
+        builder.Property(b => b.UserId).IsRequired();
     }
 }

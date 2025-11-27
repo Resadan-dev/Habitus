@@ -3,11 +3,14 @@ using Moq;
 using Valoron.Activities.Application;
 using Valoron.Activities.Domain;
 using Valoron.Activities.Domain.Events;
+using Valoron.BuildingBlocks;
 
 namespace Valoron.Activities.Tests;
 
 public class LogReadingSessionHandlerTests
 {
+    private static readonly Guid TestUserId = Guid.NewGuid();
+
     private readonly Mock<IActivityRepository> _activityRepositoryMock;
     private readonly FakeTimeProvider _fakeTimeProvider;
     private readonly LogReadingSessionHandler _handler;
@@ -28,7 +31,7 @@ public class LogReadingSessionHandlerTests
         var pagesRead = 20;
 
         var measurement = ActivityMeasurement.CreateQuantifiable(MeasureUnit.Pages, 100);
-        var activity = new Activity(activityId, "Read DDD", ActivityCategory.Learning, ActivityDifficulty.Medium, measurement, DateTime.UtcNow, bookId);
+        var activity = new Activity(activityId, TestUserId, "Read DDD", ActivityCategory.Learning, ActivityDifficulty.Medium, measurement, DateTime.UtcNow, bookId);
 
         _activityRepositoryMock.Setup(r => r.GetByIdAsync(activityId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(activity);
@@ -75,7 +78,7 @@ public class LogReadingSessionHandlerTests
         var activityId = Guid.NewGuid();
         
         var measurement = ActivityMeasurement.CreateQuantifiable(MeasureUnit.Pages, 100);
-        var activity = new Activity(activityId, "Read DDD", ActivityCategory.Learning, ActivityDifficulty.Medium, measurement, DateTime.UtcNow, null); // No ResourceId
+        var activity = new Activity(activityId, TestUserId, "Read DDD", ActivityCategory.Learning, ActivityDifficulty.Medium, measurement, DateTime.UtcNow, null); // No ResourceId
 
         _activityRepositoryMock.Setup(r => r.GetByIdAsync(activityId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(activity);

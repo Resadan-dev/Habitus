@@ -2,20 +2,26 @@ using Microsoft.Extensions.Time.Testing;
 using Moq;
 using Valoron.Activities.Application;
 using Valoron.Activities.Domain;
+using Valoron.BuildingBlocks;
 
 namespace Valoron.Activities.Tests;
 
 public class CreateActivityHandlerTests
 {
     private readonly Mock<IActivityRepository> _activityRepositoryMock;
+    private readonly Mock<ICurrentUserService> _currentUserServiceMock;
     private readonly FakeTimeProvider _fakeTimeProvider;
     private readonly CreateActivityHandler _handler;
 
     public CreateActivityHandlerTests()
     {
         _activityRepositoryMock = new Mock<IActivityRepository>();
+        _currentUserServiceMock = new Mock<ICurrentUserService>();
         _fakeTimeProvider = new FakeTimeProvider();
-        _handler = new CreateActivityHandler(_activityRepositoryMock.Object, _fakeTimeProvider);
+
+        _currentUserServiceMock.Setup(x => x.UserId).Returns(Guid.NewGuid());
+
+        _handler = new CreateActivityHandler(_activityRepositoryMock.Object, _fakeTimeProvider, _currentUserServiceMock.Object);
     }
 
     [Fact]

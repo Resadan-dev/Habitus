@@ -1,4 +1,4 @@
-namespace Valoron.Activities.Domain;
+namespace Valoron.BuildingBlocks;
 
 public enum MeasureUnit
 {
