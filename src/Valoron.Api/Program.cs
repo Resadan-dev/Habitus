@@ -25,9 +25,6 @@ builder.Host.UseWolverine(opts =>
     opts.Policies.AutoApplyTransactions();
     opts.Discovery.IncludeAssembly(typeof(CreateBookHandler).Assembly);
     opts.Discovery.IncludeAssembly(typeof(Valoron.RpgCore.Application.Handlers.BookFinishedHandler).Assembly);
-    opts.Discovery.IncludeAssembly(typeof(Valoron.RpgCore.Application.Handlers.NotifyLevelUpHandler).Assembly);
-    opts.Discovery.IncludeAssembly(typeof(Valoron.RpgCore.Application.Handlers.PlayerLeveledUpHandler).Assembly);
-    opts.Discovery.IncludeAssembly(typeof(Valoron.RpgCore.Application.Handlers.PlayerXpEarnedHandler).Assembly);
 });
 
 builder.Services.AddActivitiesInfrastructure(builder.Configuration);
