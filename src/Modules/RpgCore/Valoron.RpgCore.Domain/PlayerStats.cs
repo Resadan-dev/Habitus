@@ -4,9 +4,12 @@ namespace Valoron.RpgCore.Domain;
 
 public class PlayerStats : ValueObject
 {
-    public int Strength { get; }
-    public int Intellect { get; }
-    public int Stamina { get; }
+    public int Strength { get; private set; }
+    public int Intellect { get; private set; }
+    public int Stamina { get; private set; }
+
+    // Constructeur pour EF Core
+    private PlayerStats() { }
 
     private PlayerStats(int strength, int intellect, int stamina)
     {

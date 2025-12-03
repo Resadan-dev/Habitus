@@ -12,8 +12,16 @@ public static class DependencyInjection
     {
         var connectionString = configuration.GetConnectionString("Database");
 
-        services.AddDbContextWithWolverineIntegration<RpgDbContext>(options =>
-            options.UseNpgsql(connectionString));
+        // RpgCore uses standard AddDbContext (not Wolverine integration)
+        // because Wolverine 5.4.0 can only integrate with one DbContext for transactional outbox
+        services.AddDbContext<RpgDbContext>(options =>
+            options.UseNpgsql(connectionString, npgsqlOptions =>
+            {
+                npgsqlOptions.EnableRetryOnFailure(
+                    maxRetryCount: 3,
+                    maxRetryDelay: TimeSpan.FromSeconds(5),
+                    errorCodesToAdd: null);
+            }));
 
         services.AddScoped<IPlayerRepository, PlayerRepository>();
 

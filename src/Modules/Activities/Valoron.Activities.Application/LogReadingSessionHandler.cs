@@ -34,9 +34,8 @@ public class LogReadingSessionHandler
             throw new InvalidOperationException("Activity is not linked to a book.");
         }
 
-        activity.LogProgress(command.PagesRead, _timeProvider.GetUtcNow().DateTime);
-
-
+        activity.LogProgress(command.PagesRead, DateTime.SpecifyKind(_timeProvider.GetUtcNow().DateTime, DateTimeKind.Utc));
+        await _activityRepository.SaveChangesAsync(cancellationToken);
 
         return activity.DomainEvents;
     }

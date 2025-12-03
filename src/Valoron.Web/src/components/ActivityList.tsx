@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '../api/api';
 import { useSelector } from 'react-redux';
-import { RootState } from '../store/store';
+import type { RootState } from '../store/store';
 
 interface Activity {
     id: string;

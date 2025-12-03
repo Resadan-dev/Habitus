@@ -17,11 +17,18 @@ public static class DependencyInjection
         var connectionString = configuration.GetConnectionString("Database");
 
         services.AddDbContextWithWolverineIntegration<ActivitiesDbContext>(options =>
-            options.UseNpgsql(connectionString));
+            options.UseNpgsql(connectionString, npgsqlOptions =>
+            {
+                npgsqlOptions.EnableRetryOnFailure(
+                    maxRetryCount: 3,
+                    maxRetryDelay: TimeSpan.FromSeconds(5),
+                    errorCodesToAdd: null);
+            }));
 
         services.AddScoped<IActivityRepository, ActivityRepository>();
         services.AddScoped<IBookRepository, BookRepository>();
         services.AddScoped<IActivityQueries, ActivityQueries>();
+        services.AddScoped<IBookQueries, BookQueries>();
 
         return services;
     }

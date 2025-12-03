@@ -28,6 +28,9 @@ public class BookFinishedHandler
         // "Bonus de 500xp quand le livre est lu"
         player.AddXp(XpCalculator.BookFinishedBonus);
 
+        // Explicitly save changes (RpgCore doesn't use Wolverine transaction integration)
+        await _playerRepository.SaveChangesAsync(cancellationToken);
+
         return player.DomainEvents;
     }
 }

@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "WebFetch(domain:wolverinefx.net)",
+      "WebFetch(domain:jeremydmiller.com)",
+      "Bash(dotnet list:*)",
+      "Bash(Select-String -Pattern \"Wolverine\")",
+      "Bash(Select-String -Pattern \"PayloadAction\" node_modules/@reduxjs/toolkit/dist/index.d.ts)",
+      "Bash(Select-Object -First 5)",
+      "Bash(cat:*)",
+      "WebFetch(domain:redux-toolkit.js.org)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

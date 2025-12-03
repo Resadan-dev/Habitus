@@ -18,9 +18,10 @@ public class CreateBookHandler
     public async Task<(Guid, IEnumerable<object>)> Handle(CreateBookCommand command, CancellationToken ct)
     {
         var book = new Book(Guid.NewGuid(), _currentUserService.UserId, command.Title, command.Author, command.TotalPages);
-        
+
         await _repository.AddAsync(book, ct);
-        
+        await _repository.SaveChangesAsync(ct);
+
         return (book.Id, book.DomainEvents);
     }
 }

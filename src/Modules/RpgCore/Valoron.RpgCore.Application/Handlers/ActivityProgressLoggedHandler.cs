@@ -19,7 +19,7 @@ public class ActivityProgressLoggedHandler
         // Use the UserId from the event
         var playerId = @event.UserId;
         var player = await _playerRepository.GetByIdAsync(playerId, cancellationToken);
-        
+
         if (player == null)
         {
             player = new Player(playerId);
@@ -28,6 +28,9 @@ public class ActivityProgressLoggedHandler
 
         // Delegate XP calculation to the Domain
         player.GainXpFromActivity(@event.Unit, @event.Progress);
+
+        // Explicitly save changes (RpgCore doesn't use Wolverine transaction integration)
+        await _playerRepository.SaveChangesAsync(cancellationToken);
 
         return player.DomainEvents;
     }

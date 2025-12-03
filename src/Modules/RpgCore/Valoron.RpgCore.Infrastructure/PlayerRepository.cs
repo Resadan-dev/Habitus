@@ -20,4 +20,9 @@ public class PlayerRepository : IPlayerRepository
     {
         await _dbContext.Players.AddAsync(player, cancellationToken);
     }
+
+    public async Task SaveChangesAsync(CancellationToken cancellationToken)
+    {
+        await _dbContext.SaveChangesAsync(cancellationToken);
+    }
 }
