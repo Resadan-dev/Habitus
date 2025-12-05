@@ -18,6 +18,7 @@ export const LogSessionModal: React.FC<LogSessionModalProps> = ({
     onSessionLogged
 }) => {
     const [pagesRead, setPagesRead] = useState('');
+    const [duration, setDuration] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
     if (!isOpen) return null;
@@ -26,15 +27,22 @@ export const LogSessionModal: React.FC<LogSessionModalProps> = ({
         e.preventDefault();
         setIsLoading(true);
         try {
+            // Convert minutes to HH:mm:ss for .NET TimeSpan
+            const durationTimeSpan = duration
+                ? new Date(parseInt(duration) * 60 * 1000).toISOString().substr(11, 8)
+                : null;
+
             await api.fetch(`/api/activities/${activityId}/session`, {
                 method: 'POST',
                 body: JSON.stringify({
-                    pagesRead: parseInt(pagesRead)
+                    pagesRead: parseInt(pagesRead),
+                    duration: durationTimeSpan
                 }),
             });
             onSessionLogged();
             onClose();
             setPagesRead('');
+            setDuration('');
         } catch (error) {
             console.error('Failed to log session:', error);
             alert('Failed to log session');
@@ -71,6 +79,18 @@ export const LogSessionModal: React.FC<LogSessionModalProps> = ({
                             className="w-full bg-secondary border-transparent focus:border-primary focus:ring-1 focus:ring-primary rounded-md px-3 py-2 text-sm transition-all"
                             placeholder="e.g. 25"
                             autoFocus
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium mb-1.5">Duration (minutes) <span className="text-muted-foreground text-xs font-normal">(optional)</span></label>
+                        <input
+                            type="number"
+                            min="1"
+                            value={duration}
+                            onChange={(e) => setDuration(e.target.value)}
+                            className="w-full bg-secondary border-transparent focus:border-primary focus:ring-1 focus:ring-primary rounded-md px-3 py-2 text-sm transition-all"
+                            placeholder="e.g. 30"
                         />
                     </div>
 

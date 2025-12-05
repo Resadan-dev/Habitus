@@ -36,7 +36,7 @@ public class Activity : Entity
         AddDomainEvent(new ActivityCreatedEvent(Id, UserId, Title, Category.Code, Difficulty.Value, ResourceId));
     }
 
-    public void LogProgress(decimal value, DateTime now)
+    public void LogProgress(decimal value, DateTime now, TimeSpan? duration = null)
     {
         if (IsCompleted && Measurement.Unit == MeasureUnit.None)
             return;
@@ -45,7 +45,7 @@ public class Activity : Entity
 
         Measurement = Measurement.WithProgress(Measurement.CurrentValue + value);
 
-        AddDomainEvent(new ActivityProgressLogged(Id, UserId, ResourceId, value, Category.Code, Measurement.Unit));
+        AddDomainEvent(new ActivityProgressLogged(Id, UserId, ResourceId, value, Category.Code, Measurement.Unit, duration));
 
         if (IsCompleted && !wasCompleted)
         {

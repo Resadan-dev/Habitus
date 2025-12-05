@@ -6,40 +6,30 @@ import { Book as BookIcon, Plus, Clock, CheckCircle2, Trash2 } from 'lucide-reac
 import { CreateBookModal } from './CreateBookModal';
 import { LogSessionModal } from './LogSessionModal';
 
-interface Activity {
-    id: string;
+interface Book {
+    id: string; // BookId
+    activityId: string;
     title: string;
-    category: {
-        code: string;
-        name: string;
-    };
-    difficulty: {
-        value: number;
-        name: string;
-    };
-    isCompleted: boolean;
-    measurement: {
-        unit: string;
-        currentValue: number;
-        targetValue: number;
-    };
-    status?: string;
-    resourceId?: string;
+    author: string;
+    totalPages: number;
+    currentPage: number;
+    status: string;
+    averageReadingSpeed?: number;
+    estimatedTimeRemaining?: string; // TimeSpan string
 }
 
 export const BookList: React.FC = () => {
-    const [books, setBooks] = useState<Activity[]>([]);
+    const [books, setBooks] = useState<Book[]>([]);
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-    const [selectedBookId, setSelectedBookId] = useState<string | null>(null);
+    const [selectedBookId, setSelectedBookId] = useState<string | null>(null); // maps to ActivityId for logging
     const [selectedBookTitle, setSelectedBookTitle] = useState<string>('');
     const userId = useSelector((state: RootState) => state.user.userId);
 
     const fetchBooks = async () => {
         try {
-            const data = await api.fetch('/api/activities');
+            const data = await api.fetch('/api/books');
             if (Array.isArray(data)) {
-                const bookActivities = data.filter((a: Activity) => a.category.code === 'LRN' && a.status !== 'Abandoned');
-                setBooks(bookActivities);
+                setBooks(data);
             }
         } catch (error) {
             console.error('Failed to fetch books:', error);
@@ -50,20 +40,18 @@ export const BookList: React.FC = () => {
         fetchBooks();
     }, [userId]);
 
-    const handleLogClick = (book: Activity) => {
-        setSelectedBookId(book.id);
+    const handleLogClick = (book: Book) => {
+        // We log against the ActivityId
+        setSelectedBookId(book.activityId);
         setSelectedBookTitle(book.title);
     };
 
-    const handleAbandonClick = async (book: Activity) => {
+    const handleAbandonClick = async (book: Book) => {
         if (!confirm(`Are you sure you want to abandon "${book.title}"?`)) return;
 
         try {
-            if (!book.resourceId) {
-                console.error('Book resourceId is missing');
-                return;
-            }
-            await api.fetch(`/api/books/${book.resourceId}/abandon`, {
+            // Abandon by BookId (resourceId)
+            await api.fetch(`/api/books/${book.id}/abandon`, {
                 method: 'POST'
             });
             fetchBooks();
@@ -111,54 +99,79 @@ export const BookList: React.FC = () => {
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {books.map((book) => (
-                        <div key={book.id} className="group relative bg-card/80 backdrop-blur-sm border border-border rounded-2xl p-6 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1 transition-all duration-300">
-                            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                    {books.map((book) => {
+                        const isCompleted = book.status === 'Finished';
+                        const progress = Math.min(100, (book.currentPage / book.totalPages) * 100);
 
-                            <div className="flex justify-between items-start mb-6">
-                                <div className="p-3 bg-secondary/50 rounded-xl group-hover:bg-primary/10 transition-colors">
-                                    <BookIcon className="text-foreground group-hover:text-primary transition-colors w-6 h-6" />
+                        return (
+                            <div key={book.id} className="group relative bg-card/80 backdrop-blur-sm border border-border rounded-2xl p-6 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1 transition-all duration-300">
+                                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+
+                                <div className="flex justify-between items-start mb-6">
+                                    <div className="p-3 bg-secondary/50 rounded-xl group-hover:bg-primary/10 transition-colors">
+                                        <BookIcon className="text-foreground group-hover:text-primary transition-colors w-6 h-6" />
+                                    </div>
+                                    {isCompleted && (
+                                        <span className="bg-green-500/10 text-green-600 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1 border border-green-500/20">
+                                            <CheckCircle2 size={12} /> COMPLETED
+                                        </span>
+                                    )}
                                 </div>
-                                {book.isCompleted && (
-                                    <span className="bg-green-500/10 text-green-600 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1 border border-green-500/20">
-                                        <CheckCircle2 size={12} /> COMPLETED
+
+                                <h3 className="text-xl font-bold mb-1 line-clamp-1 text-foreground group-hover:text-primary transition-colors">
+                                    {book.title}
+                                </h3>
+                                <p className="text-sm text-muted-foreground mb-4">{book.author}</p>
+
+                                <div className="flex justify-between text-sm text-muted-foreground mb-2">
+                                    <span>Progress</span>
+                                    <span className="font-medium text-foreground">
+                                        {Math.round(progress)}%
                                     </span>
+                                </div>
+
+                                {/* Progress Bar */}
+                                <div className="h-2 bg-secondary rounded-full overflow-hidden mb-4">
+                                    <div
+                                        className="h-full bg-gradient-to-r from-primary to-purple-400 transition-all duration-1000 ease-out"
+                                        style={{ width: `${progress}%` }}
+                                    />
+                                </div>
+
+                                <div className="flex items-center justify-between gap-4 mb-4">
+                                    <span className="text-xs font-medium text-muted-foreground bg-secondary px-2 py-1 rounded-md">
+                                        {book.currentPage} / {book.totalPages} pages
+                                    </span>
+                                </div>
+
+                                {/* Stats */}
+                                {(book.averageReadingSpeed || book.estimatedTimeRemaining) && !isCompleted && (
+                                    <div className="grid grid-cols-2 gap-2 mb-4">
+                                        {book.averageReadingSpeed && (
+                                            <div className="bg-secondary/30 p-2 rounded-lg text-center">
+                                                <div className="text-xs text-muted-foreground uppercase font-bold">Speed</div>
+                                                <div className="font-mono text-sm">{Math.round(book.averageReadingSpeed)} pg/h</div>
+                                            </div>
+                                        )}
+                                        {book.estimatedTimeRemaining && (
+                                            <div className="bg-secondary/30 p-2 rounded-lg text-center">
+                                                <div className="text-xs text-muted-foreground uppercase font-bold">Left</div>
+                                                <div className="font-mono text-sm">{book.estimatedTimeRemaining.split('.')[0]}</div>
+                                            </div>
+                                        )}
+                                    </div>
                                 )}
-                            </div>
 
-                            <h3 className="text-xl font-bold mb-2 line-clamp-1 text-foreground group-hover:text-primary transition-colors">
-                                {book.title}
-                            </h3>
-
-                            <div className="flex justify-between text-sm text-muted-foreground mb-4">
-                                <span>Progress</span>
-                                <span className="font-medium text-foreground">
-                                    {Math.round((book.measurement.currentValue / book.measurement.targetValue) * 100)}%
-                                </span>
-                            </div>
-
-                            {/* Progress Bar */}
-                            <div className="h-2 bg-secondary rounded-full overflow-hidden mb-6">
-                                <div
-                                    className="h-full bg-gradient-to-r from-primary to-purple-400 transition-all duration-1000 ease-out"
-                                    style={{ width: `${Math.min(100, (book.measurement.currentValue / book.measurement.targetValue) * 100)}%` }}
-                                />
-                            </div>
-
-                            <div className="flex items-center justify-between gap-4">
-                                <span className="text-xs font-medium text-muted-foreground bg-secondary px-2 py-1 rounded-md">
-                                    {book.measurement.currentValue} / {book.measurement.targetValue} pages
-                                </span>
-                                <div className="flex gap-2 flex-1">
+                                <div className="flex gap-2">
                                     <button
                                         onClick={() => handleLogClick(book)}
-                                        disabled={book.isCompleted}
+                                        disabled={isCompleted}
                                         className="flex-1 bg-secondary hover:bg-secondary/80 text-secondary-foreground py-2.5 rounded-xl transition-all text-sm font-semibold flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-md active:scale-95"
                                     >
                                         <Clock size={16} />
-                                        {book.isCompleted ? 'Done' : 'Log'}
+                                        {isCompleted ? 'Done' : 'Log'}
                                     </button>
-                                    {!book.isCompleted && (
+                                    {!isCompleted && (
                                         <button
                                             onClick={() => handleAbandonClick(book)}
                                             className="bg-red-500/10 hover:bg-red-500/20 text-red-600 p-2.5 rounded-xl transition-all hover:shadow-md active:scale-95"
@@ -169,8 +182,8 @@ export const BookList: React.FC = () => {
                                     )}
                                 </div>
                             </div>
-                        </div>
-                    ))}
+                        )
+                    })}
                 </div>
             )}
 

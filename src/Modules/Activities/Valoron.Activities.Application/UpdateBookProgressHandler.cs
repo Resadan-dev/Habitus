@@ -23,7 +23,7 @@ public class UpdateBookProgressHandler
             throw new InvalidOperationException($"Book with ID {@event.ResourceId} not found.");
         }
 
-        book.AddPagesRead((int)@event.Progress);
+        book.AddPagesRead((int)@event.Progress, @event.Duration);
         await _bookRepository.SaveChangesAsync(cancellationToken);
     }
 }

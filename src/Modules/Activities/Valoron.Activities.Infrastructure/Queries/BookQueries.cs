@@ -16,30 +16,51 @@ public class BookQueries : IBookQueries
 
     public async Task<IEnumerable<BookDto>> GetBooksAsync(CancellationToken cancellationToken)
     {
-        return await _context.Books
-            .Select(b => new BookDto(
-                b.Id,
-                b.Title,
-                b.Author,
-                b.TotalPages,
-                b.CurrentPage,
-                b.Status.ToString()
-            ))
+        var books = await _context.Books
+            .Include(b => b.ReadingSessions)
             .ToListAsync(cancellationToken);
+
+        var bookIds = books.Select(b => b.Id).ToList();
+        var activities = await _context.Activities
+            .Where(a => a.ResourceId != null && bookIds.Contains(a.ResourceId.Value))
+            .ToDictionaryAsync(a => a.ResourceId.Value, a => a.Id, cancellationToken);
+
+        return books.Select(b => new BookDto(
+            b.Id,
+            activities.ContainsKey(b.Id) ? activities[b.Id] : Guid.Empty,
+            b.Title,
+            b.Author,
+            b.TotalPages,
+            b.CurrentPage,
+            b.Status.ToString(),
+            b.AverageReadingSpeed,
+            b.EstimateTimeRemaining()
+        ));
     }
 
     public async Task<BookDto?> GetBookByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        return await _context.Books
-            .Where(b => b.Id == id)
-            .Select(b => new BookDto(
-                b.Id,
-                b.Title,
-                b.Author,
-                b.TotalPages,
-                b.CurrentPage,
-                b.Status.ToString()
-            ))
+        var book = await _context.Books
+            .Include(b => b.ReadingSessions)
+            .FirstOrDefaultAsync(b => b.Id == id, cancellationToken);
+
+        if (book == null) return null;
+
+        var activityId = await _context.Activities
+            .Where(a => a.ResourceId == book.Id)
+            .Select(a => a.Id)
             .FirstOrDefaultAsync(cancellationToken);
+
+        return new BookDto(
+            book.Id,
+            activityId,
+            book.Title,
+            book.Author,
+            book.TotalPages,
+            book.CurrentPage,
+            book.Status.ToString(),
+            book.AverageReadingSpeed,
+            book.EstimateTimeRemaining()
+        );
     }
 }

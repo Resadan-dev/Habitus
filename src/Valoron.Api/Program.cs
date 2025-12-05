@@ -117,7 +117,7 @@ app.MapPost("/api/activities/{activityId}/session", async (
 {
     try
     {
-        var command = new LogReadingSessionCommand(activityId, request.PagesRead);
+        var command = new LogReadingSessionCommand(activityId, request.PagesRead, request.Duration);
         await bus.InvokeAsync(command, cancellationToken);
         return Results.Ok();
     }
@@ -156,4 +156,4 @@ app.MapGet("/api/players/{userId:guid}", async (
 
 app.Run();
 
-record LogReadingSessionRequest(int PagesRead);
+record LogReadingSessionRequest(int PagesRead, TimeSpan? Duration);
