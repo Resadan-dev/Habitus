@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { api } from '../api/api';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../store/store';
-import { Book as BookIcon, Plus, Clock, CheckCircle2 } from 'lucide-react';
+import { Book as BookIcon, Plus, Clock, CheckCircle2, Trash2 } from 'lucide-react';
 import { CreateBookModal } from './CreateBookModal';
 import { LogSessionModal } from './LogSessionModal';
 
@@ -23,6 +23,8 @@ interface Activity {
         currentValue: number;
         targetValue: number;
     };
+    status?: string;
+    resourceId?: string;
 }
 
 export const BookList: React.FC = () => {
@@ -36,7 +38,7 @@ export const BookList: React.FC = () => {
         try {
             const data = await api.fetch('/api/activities');
             if (Array.isArray(data)) {
-                const bookActivities = data.filter((a: Activity) => a.category.code === 'LRN');
+                const bookActivities = data.filter((a: Activity) => a.category.code === 'LRN' && a.status !== 'Abandoned');
                 setBooks(bookActivities);
             }
         } catch (error) {
@@ -51,6 +53,23 @@ export const BookList: React.FC = () => {
     const handleLogClick = (book: Activity) => {
         setSelectedBookId(book.id);
         setSelectedBookTitle(book.title);
+    };
+
+    const handleAbandonClick = async (book: Activity) => {
+        if (!confirm(`Are you sure you want to abandon "${book.title}"?`)) return;
+
+        try {
+            if (!book.resourceId) {
+                console.error('Book resourceId is missing');
+                return;
+            }
+            await api.fetch(`/api/books/${book.resourceId}/abandon`, {
+                method: 'POST'
+            });
+            fetchBooks();
+        } catch (error) {
+            console.error('Failed to abandon book:', error);
+        }
     };
 
     return (
@@ -130,14 +149,25 @@ export const BookList: React.FC = () => {
                                 <span className="text-xs font-medium text-muted-foreground bg-secondary px-2 py-1 rounded-md">
                                     {book.measurement.currentValue} / {book.measurement.targetValue} pages
                                 </span>
-                                <button
-                                    onClick={() => handleLogClick(book)}
-                                    disabled={book.isCompleted}
-                                    className="flex-1 bg-secondary hover:bg-secondary/80 text-secondary-foreground py-2.5 rounded-xl transition-all text-sm font-semibold flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-md active:scale-95"
-                                >
-                                    <Clock size={16} />
-                                    {book.isCompleted ? 'Done' : 'Log'}
-                                </button>
+                                <div className="flex gap-2 flex-1">
+                                    <button
+                                        onClick={() => handleLogClick(book)}
+                                        disabled={book.isCompleted}
+                                        className="flex-1 bg-secondary hover:bg-secondary/80 text-secondary-foreground py-2.5 rounded-xl transition-all text-sm font-semibold flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-md active:scale-95"
+                                    >
+                                        <Clock size={16} />
+                                        {book.isCompleted ? 'Done' : 'Log'}
+                                    </button>
+                                    {!book.isCompleted && (
+                                        <button
+                                            onClick={() => handleAbandonClick(book)}
+                                            className="bg-red-500/10 hover:bg-red-500/20 text-red-600 p-2.5 rounded-xl transition-all hover:shadow-md active:scale-95"
+                                            title="Abandon Book"
+                                        >
+                                            <Trash2 size={16} />
+                                        </button>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     ))}

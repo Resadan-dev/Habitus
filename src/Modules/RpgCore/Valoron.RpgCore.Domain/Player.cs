@@ -9,7 +9,10 @@ public class Player : Entity
     public int Level { get; private set; }
     public PlayerStats Stats { get; private set; }
 
-    private Player() { }
+    private Player() 
+    {
+        Stats = null!;
+    }
 
     public Player(Guid userId) : base(userId)
     {

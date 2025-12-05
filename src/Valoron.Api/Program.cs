@@ -92,6 +92,23 @@ app.MapPost("/api/books", async (CreateBookCommand command, IMessageBus bus, Can
     return Results.Created($"/api/books/{id}", id);
 });
 
+app.MapPost("/api/books/{id}/abandon", async (Guid id, IMessageBus bus, CancellationToken ct) =>
+{
+    try
+    {
+        await bus.InvokeAsync(new AbandonBookCommand(id), ct);
+        return Results.Ok();
+    }
+    catch (InvalidOperationException ex)
+    {
+        return Results.BadRequest(new { error = ex.Message });
+    }
+    catch (UnauthorizedAccessException)
+    {
+        return Results.Forbid();
+    }
+});
+
 app.MapPost("/api/activities/{activityId}/session", async (
     Guid activityId,
     LogReadingSessionRequest request,

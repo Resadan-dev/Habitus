@@ -68,4 +68,12 @@ public class Book : Entity
         Status = BookStatus.Finished;
         AddDomainEvent(new Events.BookFinishedEvent(Id, UserId));
     }
+
+    public void Abandon()
+    {
+        if (Status == BookStatus.Finished) throw new InvalidOperationException("Cannot abandon a finished book");
+        
+        Status = BookStatus.Abandoned;
+        AddDomainEvent(new Events.BookAbandonedEvent(Id, UserId));
+    }
 }

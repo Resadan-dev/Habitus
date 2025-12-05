@@ -11,4 +11,5 @@ public record ActivityDto(
     DateTime CreatedAt,
     DateTime? CompletedAt,
     Guid? ResourceId,
-    ActivityMeasurement Measurement);
+    ActivityMeasurement Measurement,
+    string? Status = null);

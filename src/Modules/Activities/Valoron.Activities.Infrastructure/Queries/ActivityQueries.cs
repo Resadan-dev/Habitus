@@ -16,36 +16,42 @@ public class ActivityQueries : IActivityQueries
 
     public async Task<IEnumerable<ActivityDto>> GetActivitiesAsync(CancellationToken cancellationToken = default)
     {
-        return await _context.Activities
-            .AsNoTracking()
-            .Select(a => new ActivityDto(
-                a.Id,
-                a.Title,
-                a.Category,
-                a.Difficulty,
-                a.IsCompleted,
-                a.CreatedAt,
-                a.CompletedAt,
-                a.ResourceId,
-                a.Measurement))
-            .ToListAsync(cancellationToken);
+        var query = from activity in _context.Activities.AsNoTracking()
+                    join book in _context.Books.AsNoTracking() on activity.ResourceId equals book.Id into books
+                    from book in books.DefaultIfEmpty()
+                    select new ActivityDto(
+                        activity.Id,
+                        activity.Title,
+                        activity.Category,
+                        activity.Difficulty,
+                        activity.IsCompleted,
+                        activity.CreatedAt,
+                        activity.CompletedAt,
+                        activity.ResourceId,
+                        activity.Measurement,
+                        book != null ? book.Status.ToString() : null);
+
+        return await query.ToListAsync(cancellationToken);
     }
 
     public async Task<ActivityDto?> GetActivityByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        return await _context.Activities
-            .AsNoTracking()
-            .Where(a => a.Id == id)
-            .Select(a => new ActivityDto(
-                a.Id,
-                a.Title,
-                a.Category,
-                a.Difficulty,
-                a.IsCompleted,
-                a.CreatedAt,
-                a.CompletedAt,
-                a.ResourceId,
-                a.Measurement))
-            .FirstOrDefaultAsync(cancellationToken);
+        var query = from activity in _context.Activities.AsNoTracking()
+                    where activity.Id == id
+                    join book in _context.Books.AsNoTracking() on activity.ResourceId equals book.Id into books
+                    from book in books.DefaultIfEmpty()
+                    select new ActivityDto(
+                        activity.Id,
+                        activity.Title,
+                        activity.Category,
+                        activity.Difficulty,
+                        activity.IsCompleted,
+                        activity.CreatedAt,
+                        activity.CompletedAt,
+                        activity.ResourceId,
+                        activity.Measurement,
+                        book != null ? book.Status.ToString() : null);
+
+        return await query.FirstOrDefaultAsync(cancellationToken);
     }
 }
